@@ -9,58 +9,15 @@
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "扫描全能王",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/scan/scan",
-      "style": {
-        "navigationBarTitleText": "手机扫描仪",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/ocr/ocr",
-      "style": {
-        "navigationBarTitleText": "文字识别",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/idcard/idcard",
-      "style": {
-        "navigationBarTitleText": "证件扫描",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/testpaper/testpaper",
-      "style": {
-        "navigationBarTitleText": "试卷还原",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/document/document",
-      "style": {
-        "navigationBarTitleText": "文档管理",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/pdf/pdf",
-      "style": {
-        "navigationBarTitleText": "PDF工具",
-        "navigationStyle": "custom"
+        "navigationBarTitleText": "uniapp框架"
       }
     }
   ],
   "globalStyle": {
-    "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "扫描全能王",
-    "navigationBarBackgroundColor": "#00BFA5",
-    "backgroundColor": "#F5F5F5"
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
   },
   "style": {
     "app-plus": {
