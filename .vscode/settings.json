@@ -1,0 +1,5 @@
+{
+    "i18n-ally.localesPaths": [
+        "src/uni_modules/z-paging/components/z-paging/i18n"
+    ]
+}

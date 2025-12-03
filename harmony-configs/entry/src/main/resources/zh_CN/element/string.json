@@ -43,6 +43,10 @@
     {
       "name": "permission_microphone_reason",
       "value": "药德PRO想访问您的麦克风，允许吗？"
+    },
+    {
+      "name": "permission_write_settings_reason",
+      "value": "用于控制屏幕亮度，提供更好的使用体验"
     }
   ]
 }

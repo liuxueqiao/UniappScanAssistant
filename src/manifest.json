@@ -1,9 +1,9 @@
 {
-    "name" : "项目框架",
+    "name" : "光源",
     "appid" : "__UNI__3519495",
-    "description" : "",
-    "versionName" : "1.6.6",
-    "versionCode" : 53,
+    "description" : "百变光源",
+    "versionName" : "1.0.0",
+    "versionCode" : 1,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -195,11 +195,11 @@
         "distribute" : {
             "bundleName" : "com.qiao.scan",
             "icons" : {
-                "foreground" : "",
-                "background" : ""
+                "foreground" : "unpackage/res/my_1024.png",
+                "background" : "unpackage/res/my_1024.png"
             },
             "splashScreens" : {
-                "startWindowIcon" : ""
+                "startWindowIcon" : "unpackage/res/my_1024.png"
             },
             "modules" : {},
             "permissions" : [
@@ -238,6 +238,14 @@
                 {
                     "name" : "ohos.permission.MICROPHONE",
                     "reason" : "药德PRO想访问您的麦克风，允许吗？",
+                    "usedScene" : {
+                        "abilities" : [ "*" ],
+                        "when" : "inuse"
+                    }
+                },
+                {
+                    "name" : "ohos.permission.WRITE_SETTINGS",
+                    "reason" : "用于控制屏幕亮度，提供更好的使用体验",
                     "usedScene" : {
                         "abilities" : [ "*" ],
                         "when" : "inuse"
