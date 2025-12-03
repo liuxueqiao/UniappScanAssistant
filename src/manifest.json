@@ -163,15 +163,6 @@
         "permission" : {
             "scope.userLocation" : {
                 "desc" : "获取当前地理位置"
-            },
-            "scope.record" : {
-                "desc" : "用于录制语音并转换为文字"
-            }
-        },
-        "plugins" : {
-            "WechatSI" : {
-                "version" : "0.3.3",
-                "provider" : "wx069ba97219f66d99"
             }
         },
         "requiredPrivateInfos" : [ "getLocation" ]

@@ -243,12 +243,13 @@ const goBack = () => {
   flex: 1;
   width: 100%;
   display: flex;
-  padding: 24rpx;
   overflow-y: auto;
 }
 
 .privacy-content {
   padding: 0;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
   background-color: #f5f5f5;
   min-height: 100%;
 }
@@ -257,7 +258,9 @@ const goBack = () => {
   max-width: 800rpx;
   margin: 0 auto;
   background-color: #ffffff;
-  padding: 0;
+  padding: 0 40rpx;
+  padding-bottom: calc(40rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
   border-radius: 0;
   box-shadow: none;
 }

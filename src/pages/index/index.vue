@@ -204,10 +204,10 @@ const openSettings = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
-  border: 2rpx solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.35);
+  border: 2rpx solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.15);
   z-index: 100;
   cursor: pointer;
   backdrop-filter: blur(8rpx);
@@ -216,21 +216,21 @@ const openSettings = () => {
     box-shadow 0.2s ease;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.55);
-    box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.45);
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.2);
   }
 
   &:active {
-    background-color: rgba(0, 0, 0, 0.65);
+    background-color: rgba(255, 255, 255, 0.5);
     transform: scale(0.94);
-    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
   }
 }
 
 .settings-icon {
   font-size: 54rpx;
-  color: #ffffff;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+  color: #333333;
+  text-shadow: none;
 }
 
 /* 隐私协议弹窗样式 */

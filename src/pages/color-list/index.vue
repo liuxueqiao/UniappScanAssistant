@@ -23,10 +23,24 @@
       >
         <text class="tab-text">万圣节</text>
       </view>
+      <view
+        class="tab-item"
+        :class="{ active: activeTab === 'custom' }"
+        @click="switchTab('custom')"
+      >
+        <text class="tab-text">自定义</text>
+      </view>
     </view>
 
     <!-- 颜色列表 -->
     <view class="color-list">
+      <!-- 自定义标签为空时的提示 -->
+      <view v-if="activeTab === 'custom' && currentColorList.length === 0" class="empty-view">
+        <text class="empty-icon">🎨</text>
+        <text class="empty-text">暂无自定义颜色</text>
+        <text class="empty-hint">去设置页面创建自定义颜色吧~</text>
+      </view>
+      
       <view
         v-for="(color, index) in currentColorList"
         :key="index"
@@ -48,7 +62,7 @@
               <text class="description-label">适用场景：</text>
               <text class="description-text">{{ getSceneText(color) }}</text>
             </view>
-            <view class="description-line">
+            <view v-if="activeTab !== 'custom'" class="description-line">
               <text class="description-label">效果：</text>
               <text class="description-text">{{ getEffectText(color) }}</text>
             </view>
@@ -77,6 +91,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 
 interface ColorDetail {
   name: string;
@@ -88,9 +103,10 @@ interface ColorDetail {
   description: string;
 }
 
-const activeTab = ref<'photographer' | 'creator' | 'halloween'>('photographer');
+const activeTab = ref<'photographer' | 'creator' | 'halloween' | 'custom'>('photographer');
 const currentColor = ref<{ r: number; g: number; b: number } | null>(null);
 const favoriteColors = ref<ColorDetail[]>([]);
+const customColors = ref<ColorDetail[]>([]);
 
 // 摄影师颜色列表
 const photographerColors: ColorDetail[] = [
@@ -352,7 +368,13 @@ const currentColorList = computed(() => {
   if (activeTab.value === 'creator') {
     return creatorColors;
   }
-  return halloweenColors;
+  if (activeTab.value === 'halloween') {
+    return halloweenColors;
+  }
+  if (activeTab.value === 'custom') {
+    return customColors.value;
+  }
+  return photographerColors;
 });
 
 onLoad(() => {
@@ -363,6 +385,8 @@ onLoad(() => {
   }
   // 加载收藏的颜色
   loadFavorites();
+  // 加载自定义颜色
+  loadCustomColors();
 });
 
 const loadFavorites = () => {
@@ -371,6 +395,20 @@ const loadFavorites = () => {
     favoriteColors.value = saved;
   }
 };
+
+const loadCustomColors = () => {
+  const saved = uni.getStorageSync('customColors');
+  if (saved && Array.isArray(saved)) {
+    customColors.value = saved;
+  } else {
+    customColors.value = [];
+  }
+};
+
+onShow(() => {
+  // 重新加载自定义颜色（可能已更新）
+  loadCustomColors();
+});
 
 const isColorFavorited = (color: ColorDetail) => {
   return favoriteColors.value.some(
@@ -393,7 +431,7 @@ const toggleFavorite = (color: ColorDetail) => {
   uni.setStorageSync('favoriteColors', favoriteColors.value);
 };
 
-const switchTab = (tab: 'photographer' | 'creator' | 'halloween') => {
+const switchTab = (tab: 'photographer' | 'creator' | 'halloween' | 'custom') => {
   activeTab.value = tab;
 };
 
@@ -702,5 +740,33 @@ const getEffectText = (color: ColorDetail): string => {
 
 .favorite-btn.favorited .favorite-icon {
   color: #ffffff;
+}
+
+.empty-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 40rpx;
+  min-height: 400rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
 }
 </style>

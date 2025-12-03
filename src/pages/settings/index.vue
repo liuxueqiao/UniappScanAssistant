@@ -64,7 +64,12 @@
 
         <!-- 自定义颜色 -->
         <view class="custom-color-section">
-          <view class="custom-color-label">自定义颜色</view>
+          <view class="custom-color-header">
+            <text class="custom-color-label">自定义颜色</text>
+            <view class="save-custom-color-btn" @click="showSaveColorModal">
+              <text class="save-btn-text">保存为自定义</text>
+            </view>
+          </view>
           <view class="custom-color-preview" :style="{ backgroundColor: `rgb(${localColor.r}, ${localColor.g}, ${localColor.b})` }" />
           <view class="rgb-controls">
             <view class="rgb-item">
@@ -146,6 +151,14 @@
         </view>
       </view>
 
+      <!-- 保存自定义颜色弹窗组件 -->
+      <SaveColorModal
+        :visible="showSaveModal"
+        :color="localColor"
+        @confirm="handleSaveColorConfirm"
+        @cancel="closeSaveModal"
+      />
+
       <!-- 收藏模式 -->
       <view v-if="mode === 'favorite'" class="setting-item">
         <view class="setting-label-row">
@@ -215,6 +228,36 @@
                 @confirm="(e) => handleFrequencyInput(e)"
               />
             </view>
+            <view class="frequency-presets">
+              <view
+                class="preset-btn"
+                :class="{ active: switchFrequency === 1 }"
+                @click="setFrequency(1)"
+              >
+                <text class="preset-text">节日</text>
+              </view>
+              <view
+                class="preset-btn"
+                :class="{ active: switchFrequency === 3 }"
+                @click="setFrequency(3)"
+              >
+                <text class="preset-text">呼吸灯</text>
+              </view>
+              <view
+                class="preset-btn"
+                :class="{ active: switchFrequency === 0.2 }"
+                @click="setFrequency(0.2)"
+              >
+                <text class="preset-text">舞台演出</text>
+              </view>
+              <view
+                class="preset-btn"
+                :class="{ active: switchFrequency === 0.08 }"
+                @click="setFrequency(0.08)"
+              >
+                <text class="preset-text">爆闪</text>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -229,6 +272,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
+import SaveColorModal from '@/components/SaveColorModal.vue';
 
 interface Color {
   r: number;
@@ -252,6 +296,7 @@ const dynamicEnabled = ref(false);
 const selectedDynamicColors = ref<ColorDetail[]>([]);
 const switchFrequency = ref(2);
 const statusBarHeight = ref(0);
+const showSaveModal = ref(false);
 
 // 摄影师颜色列表（完整）
 const photographerColors: ColorDetail[] = [
@@ -508,6 +553,32 @@ const allAvailableColors = computed(() => {
   return unique;
 });
 
+const loadCommonColors = () => {
+  const saved = uni.getStorageSync('commonColors');
+  if (saved && Array.isArray(saved) && saved.length > 0) {
+    commonColors.value = saved;
+  } else {
+    // 如果没有常用颜色，使用默认摄影师颜色
+    commonColors.value = [...defaultPhotographerColors];
+  }
+};
+
+const loadFavoriteColors = () => {
+  const saved = uni.getStorageSync('favoriteColors');
+  if (saved && Array.isArray(saved)) {
+    favoriteColors.value = saved;
+  }
+};
+
+const loadDynamicSettings = () => {
+  const saved = uni.getStorageSync('dynamicSettings');
+  if (saved) {
+    dynamicEnabled.value = saved.enabled || false;
+    selectedDynamicColors.value = saved.colors || [];
+    switchFrequency.value = saved.frequency || 2;
+  }
+};
+
 onLoad(() => {
   // 获取状态栏高度
   const systemInfo = uni.getSystemInfoSync();
@@ -549,32 +620,6 @@ onLoad(() => {
     mode.value = savedMode;
   }
 });
-
-const loadCommonColors = () => {
-  const saved = uni.getStorageSync('commonColors');
-  if (saved && Array.isArray(saved) && saved.length > 0) {
-    commonColors.value = saved;
-  } else {
-    // 如果没有常用颜色，使用默认摄影师颜色
-    commonColors.value = [...defaultPhotographerColors];
-  }
-};
-
-const loadFavoriteColors = () => {
-  const saved = uni.getStorageSync('favoriteColors');
-  if (saved && Array.isArray(saved)) {
-    favoriteColors.value = saved;
-  }
-};
-
-const loadDynamicSettings = () => {
-  const saved = uni.getStorageSync('dynamicSettings');
-  if (saved) {
-    dynamicEnabled.value = saved.enabled || false;
-    selectedDynamicColors.value = saved.colors || [];
-    switchFrequency.value = saved.frequency || 2;
-  }
-};
 
 const switchMode = (newMode: Mode) => {
   mode.value = newMode;
@@ -650,6 +695,10 @@ const handleFrequencyInput = (e: any) => {
   }
 };
 
+const setFrequency = (value: number) => {
+  switchFrequency.value = value;
+};
+
 const goToColorList = () => {
   // 保存当前颜色，以便色彩列表页面判断选中状态
   uni.setStorageSync('currentColor', { ...localColor.value });
@@ -666,6 +715,57 @@ const goToContact = () => {
 
 const goBack = () => {
   uni.navigateBack();
+};
+
+// 显示保存自定义颜色弹窗
+const showSaveColorModal = () => {
+  showSaveModal.value = true;
+};
+
+// 关闭保存弹窗
+const closeSaveModal = () => {
+  showSaveModal.value = false;
+};
+
+// 处理保存颜色确认
+const handleSaveColorConfirm = (name: string) => {
+  // 获取已有的自定义颜色
+  const customColors = uni.getStorageSync('customColors') || [];
+  
+  // 创建新的自定义颜色对象
+  const newColor: ColorDetail = {
+    name: name,
+    r: localColor.value.r,
+    g: localColor.value.g,
+    b: localColor.value.b,
+    description: '自定义颜色'
+  };
+
+  // 检查是否已存在相同RGB的颜色
+  const exists = customColors.some(
+    (c: ColorDetail) => c.r === newColor.r && c.g === newColor.g && c.b === newColor.b
+  );
+
+  if (exists) {
+    uni.showToast({
+      title: '该颜色已存在',
+      icon: 'none',
+      duration: 2000
+    });
+    return;
+  }
+
+  // 添加到自定义颜色列表
+  customColors.push(newColor);
+  uni.setStorageSync('customColors', customColors);
+
+  uni.showToast({
+    title: '保存成功',
+    icon: 'success',
+    duration: 2000
+  });
+
+  closeSaveModal();
 };
 
 // 判断是否为浅色（用于添加边框）
@@ -896,6 +996,44 @@ const handleConfirm = () => {
   background-color: #ffffff;
 }
 
+.frequency-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.preset-btn {
+  padding: 12rpx 24rpx;
+  background-color: #f5f5f5;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &.active {
+    background-color: #007aff;
+    border-color: #007aff;
+
+    .preset-text {
+      color: #ffffff;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.preset-text {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
 .setting-label-row {
   display: flex;
   justify-content: space-between;
@@ -973,10 +1111,16 @@ const handleConfirm = () => {
   margin-top: 40rpx;
 }
 
+.custom-color-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
 .custom-color-label {
   font-size: 28rpx;
   color: #666;
-  margin-bottom: 20rpx;
 }
 
 .custom-color-preview {
@@ -997,28 +1141,37 @@ const handleConfirm = () => {
 .rgb-item {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
+  // gap: 16rpx;
 }
 
 .rgb-item .slider-wrapper {
   flex: 1;
-  width: 100%;
   min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  flex-shrink: 1;
 }
 
 .rgb-item .slider-wrapper slider {
-  width: 100%;
+  width: 80%;
+  box-sizing: border-box;
 }
 
 .rgb-label {
   font-size: 28rpx;
   font-weight: 500;
   color: #333;
-  min-width: 40rpx;
+  width: 32rpx;
+  flex-shrink: 0;
+  text-align: center;
 }
 
 .rgb-input {
   width: 100rpx;
+  min-width: 100rpx;
+  max-width: 100rpx;
   height: 60rpx;
   border: 1rpx solid #e5e5e5;
   border-radius: 8rpx;
@@ -1027,7 +1180,33 @@ const handleConfirm = () => {
   color: #333;
   text-align: center;
   background-color: #ffffff;
+  flex-shrink: 0;
+  flex-grow: 0;
+  box-sizing: border-box;
 }
+
+.save-custom-color-btn {
+  padding: 12rpx 24rpx;
+  background-color: #ffffff;
+  border-radius: 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:active {
+    background-color: #f0f7ff;
+    transform: scale(0.98);
+  }
+}
+
+.save-btn-text {
+  font-size: 26rpx;
+  color: #007aff;
+  font-weight: 500;
+}
+
 
 .settings-footer {
   padding: 40rpx;
