@@ -17,6 +17,7 @@
       "path": "pages/settings/index",
       "style": {
         "navigationBarTitleText": "设置",
+        "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#ffffff",
         "navigationBarTextStyle": "black"
       }
@@ -25,6 +26,23 @@
       "path": "pages/color-list/index",
       "style": {
         "navigationBarTitleText": "色彩库",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/contact/index",
+      "style": {
+        "navigationBarTitleText": "联系我们",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/webview/index",
+      "style": {
+        "navigationBarTitleText": "隐私政策",
+        "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#ffffff",
         "navigationBarTextStyle": "black"
       }

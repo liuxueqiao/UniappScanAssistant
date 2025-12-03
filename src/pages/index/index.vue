@@ -159,23 +159,37 @@ const openSettings = () => {
   position: absolute;
   top: var(--button-top, 120rpx);
   right: 40rpx;
-  width: 80rpx;
-  height: 80rpx;
+  width: 96rpx;
+  height: 96rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.45);
   border-radius: 50%;
+  border: 2rpx solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.35);
   z-index: 100;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.55);
+    box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.45);
+  }
 
   &:active {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.65);
+    transform: scale(0.94);
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
   }
 }
 
 .settings-icon {
-  font-size: 48rpx;
+  font-size: 54rpx;
+  color: #ffffff;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
 }
 </style>

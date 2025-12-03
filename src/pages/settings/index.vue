@@ -1,5 +1,19 @@
 <template>
   <view class="settings-page">
+    <!-- 自定义导航栏 -->
+    <view class="custom-navbar" :style="{ paddingTop: `${statusBarHeight}px` }">
+      <view class="navbar-content">
+        <view class="navbar-left">
+          <view class="back-btn" @click="goBack">
+            <text class="back-icon">‹</text>
+          </view>
+          <text class="navbar-title">设置</text>
+        </view>
+        <view class="help-btn" @click="goToContact">
+          <text class="help-icon">?</text>
+        </view>
+      </view>
+    </view>
     <view class="settings-content">
       <!-- 模式选择 -->
       <view class="setting-item">
@@ -237,6 +251,7 @@ const favoriteColors = ref<ColorDetail[]>([]);
 const dynamicEnabled = ref(false);
 const selectedDynamicColors = ref<ColorDetail[]>([]);
 const switchFrequency = ref(2);
+const statusBarHeight = ref(0);
 
 // 摄影师颜色列表（完整）
 const photographerColors: ColorDetail[] = [
@@ -494,6 +509,10 @@ const allAvailableColors = computed(() => {
 });
 
 onLoad(() => {
+  // 获取状态栏高度
+  const systemInfo = uni.getSystemInfoSync();
+  statusBarHeight.value = systemInfo.statusBarHeight || 0;
+  
   // 加载常用颜色
   loadCommonColors();
   // 加载收藏颜色
@@ -639,6 +658,16 @@ const goToColorList = () => {
   });
 };
 
+const goToContact = () => {
+  uni.navigateTo({
+    url: '/pages/contact/index'
+  });
+};
+
+const goBack = () => {
+  uni.navigateBack();
+};
+
 // 判断是否为浅色（用于添加边框）
 const isLightColor = (color: ColorDetail): boolean => {
   // 计算亮度 (使用相对亮度公式)
@@ -691,9 +720,84 @@ const handleConfirm = () => {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  padding-top: constant(safe-area-inset-top);
-  padding-top: env(safe-area-inset-top);
   height: 100vh;
+}
+
+.custom-navbar {
+  background-color: #ffffff;
+  border-bottom: 1rpx solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-content {
+  height: 88rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40rpx;
+  position: relative;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:active {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+.back-icon {
+  font-size: 48rpx;
+  color: #333;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.navbar-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.help-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:active {
+    background-color: #e5e5e5;
+    transform: scale(0.95);
+  }
+}
+
+.help-icon {
+  font-size: 36rpx;
+  color: #666;
+  font-weight: bold;
 }
 
 .settings-content {
