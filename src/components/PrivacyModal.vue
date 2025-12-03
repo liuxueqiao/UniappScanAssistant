@@ -1,43 +1,43 @@
 <template>
-  <view class="webview-page">
-    <!-- 自定义导航栏 -->
-    <view class="custom-navbar" :style="{ paddingTop: `${statusBarHeight}px` }">
-      <view class="navbar-content">
-        <view class="navbar-left">
-          <view class="back-btn" @click="goBack">
-            <text class="back-icon">‹</text>
-          </view>
-          <text class="navbar-title">隐私政策</text>
-        </view>
-      </view>
-    </view>
-    <scroll-view class="content-scroll" scroll-y>
-      <view class="privacy-content">
-        <view class="privacy-container">
+  <view v-if="visible" class="privacy-modal-overlay" @click.stop>
+    <view class="privacy-modal" @click.stop>
+      <scroll-view class="privacy-modal-content" scroll-y>
+        <view class="privacy-modal-body">
           <view class="privacy-title">隐私政策</view>
           <view class="update-date">最后更新日期：2024年12月</view>
-          
+
           <view class="privacy-section">
-            <text class="privacy-text">欢迎使用"光源"（以下简称"本应用"）。我们非常重视您的隐私保护，本隐私政策旨在向您说明我们如何收集、使用、存储和保护您的个人信息。</text>
+            <text class="privacy-text">
+              欢迎使用"光源"（以下简称"本应用"）。我们非常重视您的隐私保护，本隐私政策旨在向您说明我们如何收集、使用、存储和保护您的个人信息。
+            </text>
           </view>
-          
+
           <view class="highlight-box">
-            <text class="highlight-text"><text class="highlight-label">重要提示：</text>在使用本应用前，请您仔细阅读本隐私政策。如果您不同意本政策的内容，请停止使用本应用。继续使用本应用即表示您同意本隐私政策的全部内容。</text>
+            <text class="highlight-text">
+              <text class="highlight-label">重要提示：</text>
+              在使用本应用前，请您仔细阅读本隐私政策。如果您不同意本政策的内容，请停止使用本应用。继续使用本应用即表示您同意本隐私政策的全部内容。
+            </text>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">一、信息收集</view>
             <view class="subsection">
               <view class="subsection-title">1.1 我们收集的信息类型</view>
-              <text class="privacy-text">本应用是一款本地运行的补光工具，我们仅收集以下必要信息：</text>
+              <text class="privacy-text">
+                本应用是一款本地运行的补光工具，我们仅收集以下必要信息：
+              </text>
               <view class="privacy-list">
                 <view class="list-item">
                   <text class="list-label">设备信息：</text>
-                  <text class="list-text">为了适配不同设备的屏幕显示，我们可能会获取设备的基本信息（如屏幕尺寸、系统版本等），这些信息仅用于优化应用显示效果。</text>
+                  <text class="list-text">
+                    为了适配不同设备的屏幕显示，我们可能会获取设备的基本信息（如屏幕尺寸、系统版本等），这些信息仅用于优化应用显示效果。
+                  </text>
                 </view>
                 <view class="list-item">
                   <text class="list-label">使用偏好：</text>
-                  <text class="list-text">我们会在您的设备本地存储您的颜色选择、常用颜色、收藏颜色等使用偏好设置，这些数据仅存储在您的设备本地，不会上传到服务器。</text>
+                  <text class="list-text">
+                    我们会在您的设备本地存储您的颜色选择、常用颜色、收藏颜色等使用偏好设置，这些数据仅存储在您的设备本地，不会上传到服务器。
+                  </text>
                 </view>
               </view>
             </view>
@@ -53,7 +53,7 @@
               </view>
             </view>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">二、信息使用</view>
             <view class="subsection">
@@ -68,10 +68,12 @@
             </view>
             <view class="subsection">
               <view class="subsection-title">2.2 数据存储</view>
-              <text class="privacy-text">所有数据均存储在您的设备本地，我们不会将您的任何数据上传到服务器或第三方平台。</text>
+              <text class="privacy-text">
+                所有数据均存储在您的设备本地，我们不会将您的任何数据上传到服务器或第三方平台。
+              </text>
             </view>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">三、信息共享与披露</view>
             <text class="privacy-text">我们承诺：</text>
@@ -87,7 +89,7 @@
               <view class="list-item">为保护我们的合法权益</view>
             </view>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">四、数据安全</view>
             <text class="privacy-text">我们采用以下措施保护您的数据安全：</text>
@@ -96,9 +98,11 @@
               <view class="list-item">使用系统提供的安全存储机制</view>
               <view class="list-item">不进行网络传输，避免数据泄露风险</view>
             </view>
-            <text class="privacy-text">请注意，虽然我们采取了合理的安全措施，但没有任何系统是绝对安全的。请您妥善保管您的设备，避免设备丢失或被盗。</text>
+            <text class="privacy-text">
+              请注意，虽然我们采取了合理的安全措施，但没有任何系统是绝对安全的。请您妥善保管您的设备，避免设备丢失或被盗。
+            </text>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">五、您的权利</view>
             <text class="privacy-text">您对自己的数据享有以下权利：</text>
@@ -109,7 +113,9 @@
               </view>
               <view class="list-item">
                 <text class="list-label">删除权：</text>
-                <text class="list-text">您可以随时清除应用数据或卸载应用来删除所有本地数据</text>
+                <text class="list-text">
+                  您可以随时清除应用数据或卸载应用来删除所有本地数据
+                </text>
               </view>
               <view class="list-item">
                 <text class="list-label">控制权：</text>
@@ -117,22 +123,30 @@
               </view>
             </view>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">六、未成年人保护</view>
-            <text class="privacy-text">本应用不面向未满18周岁的未成年人。如果您是未成年人，请在监护人的陪同下阅读本隐私政策，并在获得监护人同意后使用本应用。</text>
+            <text class="privacy-text">
+              本应用不面向未满18周岁的未成年人。如果您是未成年人，请在监护人的陪同下阅读本隐私政策，并在获得监护人同意后使用本应用。
+            </text>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">七、隐私政策更新</view>
-            <text class="privacy-text">我们可能会不定期更新本隐私政策。更新后的隐私政策将在本页面发布，并在显著位置标注更新日期。我们建议您定期查看本隐私政策，以了解最新的隐私保护措施。</text>
-            <text class="privacy-text">如果您继续使用本应用，即表示您同意更新后的隐私政策。</text>
+            <text class="privacy-text">
+              我们可能会不定期更新本隐私政策。更新后的隐私政策将在本页面发布，并在显著位置标注更新日期。我们建议您定期查看本隐私政策，以了解最新的隐私保护措施。
+            </text>
+            <text class="privacy-text">
+              如果您继续使用本应用，即表示您同意更新后的隐私政策。
+            </text>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">八、联系我们</view>
             <view class="contact-info-box">
-              <text class="privacy-text">如果您对本隐私政策有任何疑问、意见或建议，或需要行使您的相关权利，请通过以下方式联系我们：</text>
+              <text class="privacy-text">
+                如果您对本隐私政策有任何疑问、意见或建议，或需要行使您的相关权利，请通过以下方式联系我们：
+              </text>
               <view class="contact-item-text">
                 <text class="contact-label">应用名称：</text>
                 <text class="contact-value">光源</text>
@@ -144,185 +158,206 @@
               <text class="privacy-text">我们会在收到您的反馈后尽快回复。</text>
             </view>
           </view>
-          
+
           <view class="privacy-section">
             <view class="section-title">九、适用法律</view>
-            <text class="privacy-text">本隐私政策的解释、执行和争议解决均适用中华人民共和国法律法规。</text>
+            <text class="privacy-text">
+              本隐私政策的解释、执行和争议解决均适用中华人民共和国法律法规。
+            </text>
           </view>
-          
+
           <view class="privacy-footer">
             <text class="footer-text">本隐私政策自发布之日起生效</text>
           </view>
         </view>
+      </scroll-view>
+
+      <view class="privacy-modal-footer">
+        <view class="privacy-btn privacy-btn-disagree" @click="onDisagree">
+          <text class="privacy-btn-text">不同意</text>
+        </view>
+        <view class="privacy-btn privacy-btn-agree" @click="onAgree">
+          <text class="privacy-btn-text">同意并继续</text>
+        </view>
       </view>
-    </scroll-view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+const props = defineProps<{
+  visible: boolean;
+}>();
 
-const statusBarHeight = ref(0);
+const emit = defineEmits<{
+  (e: 'agree'): void;
+  (e: 'disagree'): void;
+}>();
 
-onLoad(() => {
-  // 获取状态栏高度
-  const systemInfo = uni.getSystemInfoSync();
-  statusBarHeight.value = systemInfo.statusBarHeight || 0;
-});
+const onAgree = () => {
+  emit('agree');
+};
 
-const goBack = () => {
-  uni.navigateBack();
+const onDisagree = () => {
+  emit('disagree');
 };
 </script>
 
 <style scoped lang="scss">
-.webview-page {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.custom-navbar {
-  background-color: #ffffff;
-  border-bottom: 1rpx solid #e5e5e5;
-  position: sticky;
+.privacy-modal-overlay {
+  position: fixed;
   top: 0;
-  z-index: 100;
-  flex-shrink: 0;
-}
-
-.navbar-content {
-  height: 88rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-}
-
-.back-btn {
-  width: 60rpx;
-  height: 60rpx;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.privacy-modal {
+  width: calc(100% - 40rpx);
+  max-width: 800rpx;
+  max-height: 72vh;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+}
+
+.privacy-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.privacy-modal-body {
+  padding: 40rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: #333;
+}
+
+.privacy-modal-footer {
+  padding: 30rpx 40rpx;
+  border-top: 1rpx solid #e5e5e5;
+  display: flex;
+  gap: 20rpx;
+  flex-shrink: 0;
+}
+
+.privacy-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12rpx;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+}
+
+.privacy-btn-disagree {
+  background-color: #f5f5f5;
+  border: 1rpx solid #e5e5e5;
 
   &:active {
-    opacity: 0.6;
-    transform: scale(0.95);
+    background-color: #e5e5e5;
+    transform: scale(0.98);
   }
 }
 
-.back-icon {
-  font-size: 48rpx;
+.privacy-btn-agree {
+  background-color: #007aff;
+  border: 1rpx solid #007aff;
+
+  &:active {
+    background-color: #0056cc;
+    transform: scale(0.98);
+  }
+}
+
+.privacy-btn-text {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.privacy-btn-disagree .privacy-btn-text {
   color: #333;
-  font-weight: 300;
-  line-height: 1;
 }
 
-.navbar-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #333;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.content-scroll {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  padding: 24rpx;
-  overflow-y: auto;
-}
-
-.privacy-content {
-  padding: 0;
-  background-color: #f5f5f5;
-  min-height: 100%;
-}
-
-.privacy-container {
-  max-width: 800rpx;
-  margin: 0 auto;
-  background-color: #ffffff;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
+.privacy-btn-agree .privacy-btn-text {
+  color: #ffffff;
 }
 
 .privacy-title {
-  font-size: 64rpx;
+  font-size: 48rpx;
   color: #007aff;
-  margin-bottom: 60rpx;
+  margin-bottom: 30rpx;
   text-align: center;
-  border-bottom: 6rpx solid #007aff;
-  padding-bottom: 30rpx;
+  border-bottom: 4rpx solid #007aff;
+  padding-bottom: 20rpx;
   font-weight: 600;
 }
 
 .update-date {
   text-align: right;
   color: #999;
-  font-size: 28rpx;
-  margin-bottom: 60rpx;
+  font-size: 24rpx;
+  margin-bottom: 30rpx;
 }
 
 .privacy-section {
-  margin-bottom: 60rpx;
+  margin-bottom: 40rpx;
 }
 
 .section-title {
-  font-size: 48rpx;
+  font-size: 36rpx;
   color: #333;
-  margin-top: 60rpx;
-  margin-bottom: 30rpx;
-  padding-left: 20rpx;
-  border-left: 8rpx solid #007aff;
+  margin-top: 40rpx;
+  margin-bottom: 20rpx;
+  padding-left: 16rpx;
+  border-left: 6rpx solid #007aff;
   font-weight: 600;
 }
 
 .subsection {
-  margin-top: 40rpx;
+  margin-top: 30rpx;
 }
 
 .subsection-title {
-  font-size: 40rpx;
+  font-size: 32rpx;
   color: #555;
-  margin-top: 40rpx;
-  margin-bottom: 20rpx;
+  margin-top: 30rpx;
+  margin-bottom: 16rpx;
   font-weight: 500;
 }
 
 .privacy-text {
-  font-size: 32rpx;
+  font-size: 28rpx;
   color: #333;
   line-height: 1.8;
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
   text-align: justify;
 }
 
 .highlight-box {
   background-color: #fff3cd;
-  padding: 30rpx;
-  border-left: 8rpx solid #ffc107;
-  margin: 40rpx 0;
+  padding: 24rpx;
+  border-left: 6rpx solid #ffc107;
+  margin: 30rpx 0;
   border-radius: 8rpx;
 }
 
 .highlight-text {
-  font-size: 32rpx;
+  font-size: 28rpx;
   color: #333;
   line-height: 1.8;
 }
@@ -333,18 +368,18 @@ const goBack = () => {
 }
 
 .privacy-list {
-  margin-left: 60rpx;
-  margin-bottom: 30rpx;
+  margin-left: 40rpx;
+  margin-bottom: 20rpx;
 }
 
 .list-item {
-  font-size: 32rpx;
+  font-size: 28rpx;
   color: #333;
   line-height: 1.8;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 6rpx;
 }
 
 .list-label {
@@ -358,13 +393,13 @@ const goBack = () => {
 
 .contact-info-box {
   background-color: #f8f9fa;
-  padding: 40rpx;
-  border-radius: 16rpx;
-  margin-top: 60rpx;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  margin-top: 40rpx;
 }
 
 .contact-item-text {
-  margin: 16rpx 0;
+  margin: 12rpx 0;
   display: flex;
   flex-wrap: wrap;
 }
@@ -372,7 +407,7 @@ const goBack = () => {
 .contact-label {
   font-weight: 600;
   color: #333;
-  margin-right: 16rpx;
+  margin-right: 12rpx;
 }
 
 .contact-value {
@@ -380,15 +415,16 @@ const goBack = () => {
 }
 
 .privacy-footer {
-  margin-top: 80rpx;
-  padding-top: 40rpx;
+  margin-top: 60rpx;
+  padding-top: 30rpx;
   border-top: 2rpx solid #e5e5e5;
   text-align: center;
 }
 
 .footer-text {
   color: #999;
-  font-size: 28rpx;
+  font-size: 24rpx;
 }
 </style>
+
 
