@@ -14,6 +14,13 @@
       @agree="handleAgree"
       @disagree="handleDisagree"
     />
+
+    <!-- 新手引导组件 -->
+    <GuideModal
+      :visible="showGuide"
+      :button-top="buttonTop"
+      @confirm="closeGuide"
+    />
   </view>
 </template>
 
@@ -21,6 +28,7 @@
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PrivacyModal from '@/components/PrivacyModal.vue';
+import GuideModal from '@/components/GuideModal.vue';
 
 const currentColor = ref({ r: 255, g: 255, b: 255 }); // 默认白色
 const statusBarHeight = ref(0); // 状态栏高度
@@ -29,6 +37,7 @@ const dynamicColors = ref<Array<{ r: number; g: number; b: number }>>([]);
 const currentDynamicIndex = ref(0);
 const dynamicFrequency = ref(2);
 const showPrivacyModal = ref(false); // 是否显示隐私协议弹窗
+const showGuide = ref(false); // 是否显示新手引导
 
 const stopDynamicLight = () => {
   if (dynamicTimer.value !== null) {
@@ -80,6 +89,21 @@ const handleAgree = () => {
   uni.setStorageSync('privacyAgreed', true);
   // 关闭弹窗
   showPrivacyModal.value = false;
+  
+  // 检查是否是首次同意，如果是则显示引导
+  const hasShownGuide = uni.getStorageSync('hasShownGuide');
+  if (!hasShownGuide) {
+    // 延迟一下，等隐私弹窗完全关闭后再显示引导
+    setTimeout(() => {
+      showGuide.value = true;
+      uni.setStorageSync('hasShownGuide', true);
+    }, 300);
+  }
+};
+
+// 关闭引导
+const closeGuide = () => {
+  showGuide.value = false;
 };
 
 // 获取系统信息
@@ -178,6 +202,8 @@ const buttonTop = computed(() => {
   return statusBarHeight.value * 2 + 40; // statusBarHeight是px，需要转换为rpx（乘以2）
 });
 
+
+
 const openSettings = () => {
   uni.navigateTo({
     url: '/pages/settings/index'
@@ -232,6 +258,7 @@ const openSettings = () => {
   color: #333333;
   text-shadow: none;
 }
+
 
 /* 隐私协议弹窗样式 */
 .privacy-modal-overlay {

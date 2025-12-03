@@ -159,6 +159,16 @@
         @cancel="closeSaveModal"
       />
 
+      <!-- 颜色选择弹窗组件 -->
+      <ColorPickerModal
+        :visible="showColorPicker"
+        :selected-colors="selectedDynamicColors"
+        :default-colors="halloweenColors"
+        :all-colors="allAvailableColors"
+        @confirm="handleColorPickerConfirm"
+        @cancel="closeColorPicker"
+      />
+
       <!-- 收藏模式 -->
       <view v-if="mode === 'favorite'" class="setting-item">
         <view class="setting-label-row">
@@ -198,23 +208,6 @@
           </view>
 
           <view v-if="dynamicEnabled" class="dynamic-content">
-            <view class="setting-label">选择颜色</view>
-            
-            <view class="color-cards">
-              <view
-                v-for="(color, index) in allAvailableColors"
-                :key="index"
-                class="color-card"
-                :class="{ selected: isDynamicColorSelected(color), 'light-color': isLightColor(color) }"
-                :style="{ backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})` }"
-                @click="toggleDynamicColor(color)"
-              />
-            </view>
-
-            <view v-if="selectedDynamicColors.length === 0" class="empty-tip">
-              <text>请至少选择一个颜色</text>
-            </view>
-
             <view class="frequency-input">
               <text class="frequency-label">切换频率（秒）</text>
               <input
@@ -258,6 +251,28 @@
                 <text class="preset-text">爆闪</text>
               </view>
             </view>
+
+            <view class="setting-label-row color-select-row">
+              <text class="setting-label">选择颜色({{ selectedDynamicColors.length }})</text>
+              <view class="add-color-btn" @click="showColorPickerModal">
+                <text class="add-color-text">添加颜色</text>
+              </view>
+            </view>
+            
+            <view class="color-cards">
+              <view
+                v-for="(color, index) in allAvailableColors"
+                :key="index"
+                class="color-card"
+                :class="{ selected: isDynamicColorSelected(color), 'light-color': isLightColor(color) }"
+                :style="{ backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})` }"
+                @click="toggleDynamicColor(color)"
+              />
+            </view>
+
+            <view v-if="selectedDynamicColors.length === 0" class="empty-tip">
+              <text>请至少选择一个颜色</text>
+            </view>
           </view>
         </view>
       </view>
@@ -273,6 +288,7 @@
 import { computed, ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SaveColorModal from '@/components/SaveColorModal.vue';
+import ColorPickerModal from '@/components/ColorPickerModal.vue';
 
 interface Color {
   r: number;
@@ -297,6 +313,7 @@ const selectedDynamicColors = ref<ColorDetail[]>([]);
 const switchFrequency = ref(2);
 const statusBarHeight = ref(0);
 const showSaveModal = ref(false);
+const showColorPicker = ref(false);
 
 // 摄影师颜色列表（完整）
 const photographerColors: ColorDetail[] = [
@@ -553,6 +570,7 @@ const allAvailableColors = computed(() => {
   return unique;
 });
 
+
 const loadCommonColors = () => {
   const saved = uni.getStorageSync('commonColors');
   if (saved && Array.isArray(saved) && saved.length > 0) {
@@ -576,6 +594,9 @@ const loadDynamicSettings = () => {
     dynamicEnabled.value = saved.enabled || false;
     selectedDynamicColors.value = saved.colors || [];
     switchFrequency.value = saved.frequency || 2;
+  } else {
+    // 如果没有保存的设置，默认选中万圣节颜色
+    selectedDynamicColors.value = [...halloweenColors];
   }
 };
 
@@ -697,6 +718,22 @@ const handleFrequencyInput = (e: any) => {
 
 const setFrequency = (value: number) => {
   switchFrequency.value = value;
+};
+
+// 显示颜色选择弹窗
+const showColorPickerModal = () => {
+  showColorPicker.value = true;
+};
+
+// 关闭颜色选择弹窗
+const closeColorPicker = () => {
+  showColorPicker.value = false;
+};
+
+// 处理颜色选择确认
+const handleColorPickerConfirm = (colors: ColorDetail[]) => {
+  selectedDynamicColors.value = colors;
+  closeColorPicker();
 };
 
 const goToColorList = () => {
@@ -1041,6 +1078,10 @@ const handleConfirm = () => {
   margin-bottom: 30rpx;
 }
 
+.color-select-row {
+  margin-top: 40rpx;
+}
+
 .setting-label {
   font-size: 32rpx;
   font-weight: 500;
@@ -1241,4 +1282,27 @@ const handleConfirm = () => {
     background-color: #0056b3;
   }
 }
+
+.add-color-btn {
+  padding: 10rpx 20rpx;
+  background-color: transparent;
+  border-radius: 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:active {
+    background-color: #f0f7ff;
+    transform: scale(0.98);
+  }
+}
+
+.add-color-text {
+  font-size: 26rpx;
+  color: #007aff;
+  font-weight: 500;
+}
+
 </style>
