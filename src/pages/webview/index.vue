@@ -18,7 +18,7 @@
           <view class="update-date">最后更新日期：2024年12月</view>
           
           <view class="privacy-section">
-            <text class="privacy-text">欢迎使用"光源"（以下简称"本应用"）。我们非常重视您的隐私保护，本隐私政策旨在向您说明我们如何收集、使用、存储和保护您的个人信息。</text>
+            <text class="privacy-text">欢迎使用"LumaKit"（以下简称"本应用"）。我们非常重视您的隐私保护，本隐私政策旨在向您说明我们如何收集、使用、存储和保护您的个人信息。</text>
           </view>
           
           <view class="highlight-box">
@@ -135,7 +135,7 @@
               <text class="privacy-text">如果您对本隐私政策有任何疑问、意见或建议，或需要行使您的相关权利，请通过以下方式联系我们：</text>
               <view class="contact-item-text">
                 <text class="contact-label">应用名称：</text>
-                <text class="contact-value">光源</text>
+                <text class="contact-value">LumaKit</text>
               </view>
               <view class="contact-item-text">
                 <text class="contact-label">联系方式：</text>

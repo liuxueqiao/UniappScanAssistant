@@ -31,6 +31,7 @@ import PrivacyModal from '@/components/PrivacyModal.vue';
 import GuideModal from '@/components/GuideModal.vue';
 
 const currentColor = ref({ r: 255, g: 255, b: 255 }); // 默认白色
+const brightness = ref(100); // 亮度 10-100
 const statusBarHeight = ref(0); // 状态栏高度
 const dynamicTimer = ref<number | null>(null);
 const dynamicColors = ref<Array<{ r: number; g: number; b: number }>>([]);
@@ -50,7 +51,8 @@ const stopDynamicLight = () => {
 
 const startDynamicLight = (
   colors: Array<{ r: number; g: number; b: number }>,
-  frequency: number
+  frequency: number,
+  useGradient: boolean = false
 ) => {
   stopDynamicLight();
   if (colors.length === 0) return;
@@ -60,10 +62,40 @@ const startDynamicLight = (
   currentDynamicIndex.value = 0;
   currentColor.value = colors[0];
 
-  dynamicTimer.value = setInterval(() => {
-    currentDynamicIndex.value = (currentDynamicIndex.value + 1) % colors.length;
-    currentColor.value = colors[currentDynamicIndex.value];
-  }, frequency * 1000) as any;
+  if (useGradient && colors.length > 1) {
+    // 使用渐变效果
+    let step = 0;
+    const steps = 20; // 渐变步数
+    const stepTime = (frequency * 1000) / steps;
+    
+    const animateGradient = () => {
+      const currentIdx = currentDynamicIndex.value;
+      const nextIdx = (currentIdx + 1) % colors.length;
+      const current = colors[currentIdx];
+      const next = colors[nextIdx];
+      
+      const r = Math.round(current.r + (next.r - current.r) * (step / steps));
+      const g = Math.round(current.g + (next.g - current.g) * (step / steps));
+      const b = Math.round(current.b + (next.b - current.b) * (step / steps));
+      
+      currentColor.value = { r, g, b };
+      step++;
+      
+      if (step > steps) {
+        step = 0;
+        currentDynamicIndex.value = nextIdx;
+        currentColor.value = next;
+      }
+    };
+    
+    dynamicTimer.value = setInterval(animateGradient, stepTime) as any;
+  } else {
+    // 普通切换
+    dynamicTimer.value = setInterval(() => {
+      currentDynamicIndex.value = (currentDynamicIndex.value + 1) % colors.length;
+      currentColor.value = colors[currentDynamicIndex.value];
+    }, frequency * 1000) as any;
+  }
 };
 
 // 检查隐私协议同意状态
@@ -114,12 +146,18 @@ onMounted(() => {
   // 检查隐私协议
   checkPrivacyAgreement();
 
-  // 监听设置页面返回的颜色
+  // 监听设置页面返回的颜色和亮度
   uni.$on('colorChanged', (color: { r: number; g: number; b: number }) => {
     stopDynamicLight();
     currentColor.value = color;
     // 同时保存到本地存储
     uni.setStorageSync('currentColor', color);
+  });
+  
+  // 监听亮度变化
+  uni.$on('brightnessChanged', (value: number) => {
+    brightness.value = value;
+    uni.setStorageSync('brightness', value);
   });
 
   // 监听百变光源启动
@@ -128,8 +166,9 @@ onMounted(() => {
     (data: {
       colors: Array<{ r: number; g: number; b: number }>;
       frequency: number;
+      gradient?: boolean;
     }) => {
-      startDynamicLight(data.colors, data.frequency);
+      startDynamicLight(data.colors, data.frequency, data.gradient);
     }
   );
 
@@ -140,8 +179,24 @@ onMounted(() => {
 
   // 从存储中恢复颜色
   const savedColor = uni.getStorageSync('currentColor');
-  if (savedColor) {
-    currentColor.value = savedColor;
+  if (savedColor && savedColor.r !== undefined && savedColor.g !== undefined && savedColor.b !== undefined) {
+    // 如果存储的颜色不是黑色（可能是定时关闭导致的），则使用存储的颜色
+    if (savedColor.r !== 0 || savedColor.g !== 0 || savedColor.b !== 0) {
+      currentColor.value = savedColor;
+    }
+    // 如果是黑色，保持默认白色
+  } else {
+    // 如果没有保存的颜色，使用默认白色并保存
+    uni.setStorageSync('currentColor', currentColor.value);
+  }
+  
+  // 从存储中恢复亮度
+  const savedBrightness = uni.getStorageSync('brightness');
+  if (savedBrightness !== undefined && savedBrightness !== null) {
+    brightness.value = savedBrightness;
+  } else {
+    // 如果没有保存的亮度，使用默认100%并保存
+    uni.setStorageSync('brightness', brightness.value);
   }
 
   // 检查是否有百变光源设置
@@ -164,8 +219,19 @@ onShow(() => {
 
   // 页面显示时，从存储中恢复颜色（防止从后台恢复时丢失）
   const savedColor = uni.getStorageSync('currentColor');
-  if (savedColor) {
-    currentColor.value = savedColor;
+  if (savedColor && savedColor.r !== undefined && savedColor.g !== undefined && savedColor.b !== undefined) {
+    // 如果存储的颜色不是黑色（可能是定时关闭导致的），则使用存储的颜色
+    if (savedColor.r !== 0 || savedColor.g !== 0 || savedColor.b !== 0) {
+      currentColor.value = savedColor;
+    } else {
+      // 如果是黑色，恢复为默认白色
+      currentColor.value = { r: 255, g: 255, b: 255 };
+      uni.setStorageSync('currentColor', currentColor.value);
+    }
+  } else {
+    // 如果没有保存的颜色，使用默认白色并保存
+    currentColor.value = { r: 255, g: 255, b: 255 };
+    uni.setStorageSync('currentColor', currentColor.value);
   }
 
   // 检查百变光源状态
@@ -177,7 +243,11 @@ onShow(() => {
       dynamicSettings.enabled &&
       dynamicSettings.colors.length > 0
     ) {
-      startDynamicLight(dynamicSettings.colors, dynamicSettings.frequency);
+      startDynamicLight(
+        dynamicSettings.colors,
+        dynamicSettings.frequency,
+        dynamicSettings.gradient
+      );
     }
   }
 });
@@ -189,11 +259,16 @@ onUnmounted(() => {
   uni.$off('stopDynamicLight');
 });
 
-// 计算容器的样式
+// 计算容器的样式（应用亮度）
 const containerStyle = computed(() => {
   const { r, g, b } = currentColor.value;
+  // 根据亮度调整颜色（0-100映射到0-1）
+  const brightnessFactor = brightness.value / 100;
+  const adjustedR = Math.round(r * brightnessFactor);
+  const adjustedG = Math.round(g * brightnessFactor);
+  const adjustedB = Math.round(b * brightnessFactor);
   return {
-    backgroundColor: `rgb(${r}, ${g}, ${b})`
+    backgroundColor: `rgb(${adjustedR}, ${adjustedG}, ${adjustedB})`
   };
 });
 

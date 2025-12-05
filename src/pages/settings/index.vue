@@ -9,8 +9,13 @@
           </view>
           <text class="navbar-title">设置</text>
         </view>
-        <view class="help-btn" @click="goToContact">
-          <text class="help-icon">?</text>
+        <view class="navbar-right">
+          <view class="help-btn" @click="goToHelp">
+            <text class="help-icon">?</text>
+          </view>
+          <view class="help-btn" @click="goToContact">
+            <text class="help-icon">📧</text>
+          </view>
         </view>
       </view>
     </view>
@@ -39,6 +44,13 @@
             @click="switchMode('dynamic')"
           >
             <text class="mode-text">百变光源</text>
+          </view>
+          <view
+            class="mode-item"
+            :class="{ active: mode === 'scene' }"
+            @click="switchMode('scene')"
+          >
+            <text class="mode-text">场景模式</text>
           </view>
         </view>
       </view>
@@ -273,6 +285,183 @@
             <view v-if="selectedDynamicColors.length === 0" class="empty-tip">
               <text>请至少选择一个颜色</text>
             </view>
+
+            <!-- 渐变效果开关 -->
+            <view class="switch-row" style="margin-top: 30rpx;">
+              <text class="switch-label">平滑过渡</text>
+              <switch
+                :checked="gradientEnabled"
+                @change="handleGradientSwitch"
+                color="#007aff"
+              />
+            </view>
+            <view v-if="gradientEnabled" class="gradient-tip">
+              <text>开启后颜色切换将使用平滑渐变效果</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 场景模式 -->
+      <view v-if="mode === 'scene'" class="setting-item">
+        <view class="setting-label">场景模式</view>
+        <view class="scene-cards">
+          <view
+            v-for="(scene, index) in sceneModes"
+            :key="index"
+            class="scene-card"
+            :class="{ active: selectedScene === scene.id }"
+            @click="selectScene(scene)"
+          >
+            <view class="scene-icon">{{ scene.icon }}</view>
+            <text class="scene-name">{{ scene.name }}</text>
+            <text class="scene-desc">{{ scene.description }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 亮度调节（所有模式通用） -->
+      <view class="setting-item">
+        <view class="setting-label-row">
+          <text class="setting-label">亮度调节</text>
+          <text class="brightness-value">{{ brightness }}%</text>
+        </view>
+        <view class="brightness-control">
+          <slider
+            :value="brightness"
+            min="10"
+            max="100"
+            step="5"
+            activeColor="#007aff"
+            backgroundColor="#e5e5e5"
+            block-color="#ffffff"
+            block-size="20"
+            @change="handleBrightnessChange"
+          />
+        </view>
+      </view>
+
+      <!-- 色温调节 -->
+      <view class="setting-item">
+        <view class="setting-label-row">
+          <text class="setting-label">色温调节</text>
+          <text class="temperature-value">{{ colorTemperature }}K</text>
+        </view>
+        <view class="temperature-control">
+          <view class="temperature-presets">
+            <view
+              v-for="(preset, index) in temperaturePresets"
+              :key="index"
+              class="temperature-preset-btn"
+              :class="{ active: colorTemperature === preset.value }"
+              @click="setTemperature(preset.value)"
+            >
+              <text class="temperature-preset-text">{{ preset.label }}</text>
+            </view>
+          </view>
+          <view class="temperature-slider">
+            <slider
+              :value="colorTemperature"
+              min="2000"
+              max="8000"
+              step="100"
+              activeColor="#ff9500"
+              backgroundColor="#e5e5e5"
+              block-color="#ffffff"
+              block-size="20"
+              @change="handleTemperatureChange"
+            />
+          </view>
+        </view>
+      </view>
+
+      <!-- 定时功能 -->
+      <view class="setting-item">
+        <view class="setting-label-row">
+          <text class="setting-label">定时关闭</text>
+          <switch
+            :checked="timerEnabled"
+            @change="handleTimerSwitch"
+            color="#007aff"
+          />
+        </view>
+        <view v-if="timerEnabled" class="timer-controls">
+          <view class="timer-presets">
+            <view
+              v-for="(preset, index) in timerPresets"
+              :key="index"
+              class="timer-preset-btn"
+              :class="{ active: timerMinutes === preset.value }"
+              @click="setTimer(preset.value)"
+            >
+              <text class="timer-preset-text">{{ preset.label }}</text>
+            </view>
+          </view>
+          <view class="timer-custom">
+            <text class="timer-label">自定义：</text>
+            <input
+              class="timer-input"
+              type="number"
+              :value="timerMinutes"
+              min="1"
+              max="120"
+              placeholder="分钟"
+              @blur="(e) => handleTimerInput(e)"
+              @confirm="(e) => handleTimerInput(e)"
+            />
+            <text class="timer-unit">分钟</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 使用统计 -->
+      <view class="setting-item">
+        <view class="setting-label">使用统计</view>
+        <view class="stats-content">
+          <view class="stat-item">
+            <text class="stat-label">总使用时长</text>
+            <text class="stat-value">{{ formatDuration(totalUsageTime) }}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">最常用颜色</text>
+            <view class="stat-color">
+              <view
+                v-if="mostUsedColor"
+                class="color-preview"
+                :style="{ backgroundColor: `rgb(${mostUsedColor.r}, ${mostUsedColor.g}, ${mostUsedColor.b})` }"
+              />
+              <text class="stat-color-name">{{ mostUsedColor?.name || '暂无' }}</text>
+            </view>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">使用次数</text>
+            <text class="stat-value">{{ usageCount }}次</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 历史记录 -->
+      <view class="setting-item">
+        <view class="setting-label-row">
+          <text class="setting-label">历史记录</text>
+          <text class="clear-btn" @click="clearHistory">清空</text>
+        </view>
+        <view v-if="historyColors.length === 0" class="empty-tip">
+          <text>暂无历史记录</text>
+        </view>
+        <view v-else class="history-cards">
+          <view
+            v-for="(color, index) in historyColors"
+            :key="index"
+            class="history-card"
+            :class="{ 'light-color': isLightColor(color) }"
+            :style="{ backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})` }"
+            @click="selectHistoryColor(color)"
+          >
+            <view class="history-info">
+              <text class="history-name">{{ color.name || '自定义颜色' }}</text>
+              <text class="history-time">{{ formatTime(color.timestamp) }}</text>
+            </view>
           </view>
         </view>
       </view>
@@ -302,7 +491,7 @@ interface ColorDetail extends Color {
   description: string;
 }
 
-type Mode = 'common' | 'favorite' | 'dynamic';
+type Mode = 'common' | 'favorite' | 'dynamic' | 'scene';
 
 const mode = ref<Mode>('common');
 const localColor = ref<Color>({ r: 255, g: 255, b: 255 });
@@ -314,6 +503,26 @@ const switchFrequency = ref(2);
 const statusBarHeight = ref(0);
 const showSaveModal = ref(false);
 const showColorPicker = ref(false);
+const brightness = ref(100); // 亮度 10-100
+const timerEnabled = ref(false);
+const timerMinutes = ref(30);
+const selectedScene = ref<string | null>(null);
+const timerId = ref<number | null>(null);
+const totalUsageTime = ref(0); // 总使用时长（秒）
+const usageCount = ref(0); // 使用次数
+const mostUsedColor = ref<ColorDetail | null>(null); // 最常用颜色
+const historyColors = ref<Array<ColorDetail & { timestamp: number }>>([]); // 历史记录
+const colorTemperature = ref(5600); // 色温 2000-8000K
+const gradientEnabled = ref(false); // 渐变效果开关
+const compareEnabled = ref(false); // 颜色对比开关
+const compareColor = ref<Color>({ r: 255, g: 255, b: 255 }); // 对比颜色
+const presets = ref<Array<{
+  name: string;
+  color: Color;
+  brightness: number;
+  temperature: number;
+  mode: Mode;
+}>>([]); // 预设方案
 
 // 摄影师颜色列表（完整）
 const photographerColors: ColorDetail[] = [
@@ -550,6 +759,82 @@ const halloweenColors: ColorDetail[] = [
 // 默认摄影师颜色（用于初始化常用颜色）
 const defaultPhotographerColors = photographerColors;
 
+// 场景模式定义
+interface SceneMode {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  color: Color;
+  brightness?: number;
+}
+
+const sceneModes: SceneMode[] = [
+  {
+    id: 'reading',
+    name: '阅读模式',
+    icon: '📖',
+    description: '护眼暖光，适合长时间阅读',
+    color: { r: 255, g: 240, b: 220 },
+    brightness: 60
+  },
+  {
+    id: 'sleep',
+    name: '睡眠模式',
+    icon: '🌙',
+    description: '低亮度暖光，助眠放松',
+    color: { r: 255, g: 200, b: 150 },
+    brightness: 20
+  },
+  {
+    id: 'work',
+    name: '工作模式',
+    icon: '💼',
+    description: '明亮白光，提升专注力',
+    color: { r: 255, g: 255, b: 255 },
+    brightness: 90
+  },
+  {
+    id: 'eye',
+    name: '护眼模式',
+    icon: '👁️',
+    description: '防蓝光，减少眼疲劳',
+    color: { r: 255, g: 250, b: 240 },
+    brightness: 50
+  },
+  {
+    id: 'relax',
+    name: '放松模式',
+    icon: '🧘',
+    description: '柔和暖光，舒缓心情',
+    color: { r: 255, g: 230, b: 200 },
+    brightness: 40
+  },
+  {
+    id: 'focus',
+    name: '专注模式',
+    icon: '🎯',
+    description: '冷白光，提高注意力',
+    color: { r: 240, g: 245, b: 255 },
+    brightness: 80
+  }
+];
+
+// 定时预设
+const timerPresets = [
+  { label: '5分钟', value: 5 },
+  { label: '15分钟', value: 15 },
+  { label: '30分钟', value: 30 },
+  { label: '60分钟', value: 60 }
+];
+
+// 色温预设
+const temperaturePresets = [
+  { label: '暖光', value: 3000 },
+  { label: '自然', value: 5600 },
+  { label: '冷光', value: 6500 }
+];
+
 // 获取所有可用颜色（用于百变光源选择）- 包含色彩库中的所有颜色
 const allAvailableColors = computed(() => {
   const all: ColorDetail[] = [];
@@ -633,13 +918,47 @@ onLoad(() => {
   const savedColor = uni.getStorageSync('currentColor');
   if (savedColor) {
     localColor.value = savedColor;
+    // 根据当前颜色更新色温显示
+    updateTemperatureFromColor();
   }
-  
+
+  // 加载亮度
+  const savedBrightness = uni.getStorageSync('brightness');
+  if (savedBrightness !== undefined && savedBrightness !== null) {
+    brightness.value = savedBrightness;
+  }
+
+  // 加载定时设置
+  const savedTimerEnabled = uni.getStorageSync('timerEnabled');
+  if (savedTimerEnabled !== undefined) {
+    timerEnabled.value = savedTimerEnabled;
+  }
+  const savedTimerMinutes = uni.getStorageSync('timerMinutes');
+  if (savedTimerMinutes !== undefined) {
+    timerMinutes.value = savedTimerMinutes;
+  }
+
+  // 加载场景模式
+  const savedScene = uni.getStorageSync('selectedScene');
+  if (savedScene) {
+    selectedScene.value = savedScene;
+    const scene = sceneModes.find(s => s.id === savedScene);
+    if (scene) {
+      localColor.value = { ...scene.color };
+      if (scene.brightness !== undefined) {
+        brightness.value = scene.brightness;
+      }
+    }
+  }
+
   // 加载当前模式
   const savedMode = uni.getStorageSync('colorMode');
   if (savedMode) {
     mode.value = savedMode;
   }
+  
+  // 加载使用统计
+  loadUsageStats();
 });
 
 const switchMode = (newMode: Mode) => {
@@ -663,12 +982,16 @@ onShow(() => {
 
 const handleRgbChange = (channel: 'r' | 'g' | 'b', value: number) => {
   localColor.value[channel] = Math.max(0, Math.min(255, Number(value)));
+  // 颜色改变时更新色温显示
+  updateTemperatureFromColor();
 };
 
 const handleRgbInput = (channel: 'r' | 'g' | 'b', e: any) => {
   const value = parseInt(e.detail?.value || e.target?.value || '0', 10);
   if (!isNaN(value)) {
     localColor.value[channel] = Math.max(0, Math.min(255, value));
+    // 颜色改变时更新色温显示
+    updateTemperatureFromColor();
   }
 };
 
@@ -678,6 +1001,8 @@ const selectColor = (color: ColorDetail) => {
     g: color.g,
     b: color.b
   };
+  // 选择颜色时更新色温显示
+  updateTemperatureFromColor();
 };
 
 const isColorActive = (color: ColorDetail) => {
@@ -741,6 +1066,12 @@ const goToColorList = () => {
   uni.setStorageSync('currentColor', { ...localColor.value });
   uni.navigateTo({
     url: '/pages/color-list/index'
+  });
+};
+
+const goToHelp = () => {
+  uni.navigateTo({
+    url: '/pages/help/index'
   });
 };
 
@@ -813,16 +1144,384 @@ const isLightColor = (color: ColorDetail): boolean => {
   return brightness > 200;
 };
 
+// 场景模式选择
+const selectScene = (scene: SceneMode) => {
+  selectedScene.value = scene.id;
+  localColor.value = { ...scene.color };
+  if (scene.brightness !== undefined) {
+    brightness.value = scene.brightness;
+  }
+  // 更新色温显示
+  updateTemperatureFromColor();
+  // 实时通知首页更新亮度
+  uni.$emit('brightnessChanged', brightness.value);
+};
+
+// 亮度调节
+const handleBrightnessChange = (e: any) => {
+  brightness.value = Math.max(10, Math.min(100, Number(e.detail.value)));
+};
+
+// 定时功能
+const handleTimerSwitch = (e: any) => {
+  timerEnabled.value = e.detail.value;
+  if (!timerEnabled.value) {
+    // 关闭定时器
+    if (timerId.value !== null) {
+      clearTimeout(timerId.value);
+      timerId.value = null;
+    }
+  }
+};
+
+const setTimer = (minutes: number) => {
+  timerMinutes.value = minutes;
+};
+
+const handleTimerInput = (e: any) => {
+  const value = parseInt(e.detail?.value || e.target?.value || '30', 10);
+  if (!isNaN(value)) {
+    timerMinutes.value = Math.max(1, Math.min(120, value));
+  }
+};
+
+// 加载使用统计
+const loadUsageStats = () => {
+  const saved = uni.getStorageSync('usageStats');
+  if (saved) {
+    totalUsageTime.value = saved.totalTime || 0;
+    usageCount.value = saved.count || 0;
+    mostUsedColor.value = saved.mostUsedColor || null;
+  }
+  
+  // 加载历史记录
+  const history = uni.getStorageSync('colorHistory');
+  if (history && Array.isArray(history)) {
+    historyColors.value = history.slice(0, 20); // 只显示最近20条
+  }
+};
+
+// 格式化时长
+const formatDuration = (seconds: number): string => {
+  if (seconds < 60) {
+    return `${seconds}秒`;
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}分钟`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}小时${minutes}分钟`;
+  }
+};
+
+// 格式化时间
+const formatTime = (timestamp: number): string => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  
+  if (minutes < 1) {
+    return '刚刚';
+  } else if (minutes < 60) {
+    return `${minutes}分钟前`;
+  } else if (hours < 24) {
+    return `${hours}小时前`;
+  } else if (days < 7) {
+    return `${days}天前`;
+  } else {
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+};
+
+// 选择历史颜色
+const selectHistoryColor = (color: ColorDetail & { timestamp: number }) => {
+  localColor.value = {
+    r: color.r,
+    g: color.g,
+    b: color.b
+  };
+  // 更新色温显示
+  updateTemperatureFromColor();
+};
+
+// 清空历史记录
+const clearHistory = () => {
+  uni.showModal({
+    title: '确认清空',
+    content: '确定要清空所有历史记录吗？',
+    success: (res) => {
+      if (res.confirm) {
+        historyColors.value = [];
+        uni.removeStorageSync('colorHistory');
+        uni.showToast({
+          title: '已清空',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    }
+  });
+};
+
+// 色温调节
+const handleTemperatureChange = (e: any) => {
+  const temp = Math.max(2000, Math.min(8000, Number(e.detail.value)));
+  colorTemperature.value = temp;
+  // 根据色温计算RGB值
+  const rgb = temperatureToRgb(temp);
+  localColor.value = rgb;
+};
+
+const setTemperature = (temp: number) => {
+  colorTemperature.value = temp;
+  const rgb = temperatureToRgb(temp);
+  localColor.value = rgb;
+};
+
+// RGB转色温（估算）
+const rgbToTemperature = (r: number, g: number, b: number): number => {
+  // 简化算法：基于RGB值估算色温
+  // 如果颜色接近白色，根据蓝/红比例估算
+  const avg = (r + g + b) / 3;
+  if (avg < 50) return 2000; // 太暗，返回最低值
+  
+  // 计算色温（简化算法）
+  // 暖色（红多）-> 低色温，冷色（蓝多）-> 高色温
+  const redRatio = r / (r + g + b + 1);
+  const blueRatio = b / (r + g + b + 1);
+  
+  if (redRatio > 0.4) {
+    // 偏暖色
+    return Math.max(2000, Math.min(4000, 3000 + (redRatio - 0.4) * 2000));
+  } else if (blueRatio > 0.35) {
+    // 偏冷色
+    return Math.max(5000, Math.min(8000, 5500 + (blueRatio - 0.35) * 5000));
+  } else {
+    // 中性色
+    return 5600;
+  }
+};
+
+// 更新色温显示（基于当前颜色）
+const updateTemperatureFromColor = () => {
+  const temp = rgbToTemperature(localColor.value.r, localColor.value.g, localColor.value.b);
+  colorTemperature.value = Math.round(temp / 100) * 100; // 取整到100
+};
+
+// 色温转RGB算法
+const temperatureToRgb = (kelvin: number): Color => {
+  const temp = kelvin / 100;
+  let r, g, b;
+
+  if (temp <= 66) {
+    r = 255;
+    g = temp;
+    g = 99.4708025861 * Math.log(g) - 161.1195681661;
+    if (g < 0) g = 0;
+    if (g > 255) g = 255;
+    if (temp <= 19) {
+      b = 0;
+    } else {
+      b = temp - 10;
+      b = 138.5177312231 * Math.log(b) - 305.0447927307;
+      if (b < 0) b = 0;
+      if (b > 255) b = 255;
+    }
+  } else {
+    r = temp - 60;
+    r = 329.698727446 * (r ** -0.1332047592);
+    if (r < 0) r = 0;
+    if (r > 255) r = 255;
+
+    g = temp - 60;
+    g = 288.1221695283 * (g ** -0.0755148492);
+    if (g < 0) g = 0;
+    if (g > 255) g = 255;
+
+    b = 255;
+  }
+
+  return {
+    r: Math.round(r),
+    g: Math.round(g),
+    b: Math.round(b)
+  };
+};
+
+// 渐变效果开关
+const handleGradientSwitch = (e: any) => {
+  gradientEnabled.value = e.detail.value;
+};
+
+// 颜色对比
+const toggleCompare = () => {
+  compareEnabled.value = !compareEnabled.value;
+  if (!compareEnabled.value) {
+    compareColor.value = { r: 255, g: 255, b: 255 };
+  }
+};
+
+const setCompareColor = () => {
+  compareColor.value = { ...localColor.value };
+  uni.showToast({
+    title: '已设为对比颜色',
+    icon: 'success',
+    duration: 2000
+  });
+};
+
+const swapColors = () => {
+  const temp = { ...localColor.value };
+  localColor.value = { ...compareColor.value };
+  compareColor.value = temp;
+  // 更新色温显示
+  updateTemperatureFromColor();
+  uni.showToast({
+    title: '已交换颜色',
+    icon: 'success',
+    duration: 2000
+  });
+};
+
+// 预设方案
+const savePreset = () => {
+  uni.showModal({
+    title: '保存预设方案',
+    editable: true,
+    placeholderText: '请输入方案名称',
+    success: (res) => {
+      if (res.confirm && res.content) {
+        const preset = {
+          name: res.content,
+          color: { ...localColor.value },
+          brightness: brightness.value,
+          temperature: colorTemperature.value,
+          mode: mode.value
+        };
+        presets.value.push(preset);
+        uni.setStorageSync('presets', presets.value);
+        uni.showToast({
+          title: '保存成功',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    }
+  });
+};
+
+const loadPreset = (preset: (typeof presets.value)[0]) => {
+  localColor.value = { ...preset.color };
+  brightness.value = preset.brightness;
+  colorTemperature.value = preset.temperature;
+  mode.value = preset.mode;
+  // 更新色温显示
+  updateTemperatureFromColor();
+  // 实时通知首页更新亮度
+  uni.$emit('brightnessChanged', brightness.value);
+  uni.showToast({
+    title: '已加载方案',
+    icon: 'success',
+    duration: 2000
+  });
+};
+
+const showPresetList = () => {
+  // 这里可以打开一个管理弹窗，暂时用简单方式
+  if (presets.value.length === 0) {
+    uni.showToast({
+      title: '暂无预设方案',
+      icon: 'none',
+      duration: 2000
+    });
+  }
+};
+
+const deletePreset = (index: number) => {
+  uni.showModal({
+    title: '确认删除',
+    content: `确定要删除"${presets.value[index].name}"吗？`,
+    success: (res) => {
+      if (res.confirm) {
+        presets.value.splice(index, 1);
+        uni.setStorageSync('presets', presets.value);
+        uni.showToast({
+          title: '已删除',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    }
+  });
+};
+
+const sharePreset = (preset: typeof presets.value[0]) => {
+  const shareText = `LumaKit预设方案：${preset.name}\nRGB: (${preset.color.r}, ${preset.color.g}, ${preset.color.b})\n亮度: ${preset.brightness}%\n色温: ${preset.temperature}K`;
+  uni.setClipboardData({
+    data: shareText,
+    success: () => {
+      uni.showToast({
+        title: '已复制到剪贴板',
+        icon: 'success',
+        duration: 2000
+      });
+    }
+  });
+};
+
 const handleConfirm = () => {
   // 保存模式设置
   uni.setStorageSync('colorMode', mode.value);
+  
+  // 保存亮度设置
+  uni.setStorageSync('brightness', brightness.value);
+  
+  // 保存色温设置
+  uni.setStorageSync('colorTemperature', colorTemperature.value);
+  
+  // 保存渐变设置
+  uni.setStorageSync('gradientEnabled', gradientEnabled.value);
+  
+  // 保存场景模式
+  if (mode.value === 'scene' && selectedScene.value) {
+    uni.setStorageSync('selectedScene', selectedScene.value);
+  }
+  
+  // 保存定时设置
+  uni.setStorageSync('timerEnabled', timerEnabled.value);
+  uni.setStorageSync('timerMinutes', timerMinutes.value);
+  
+  // 如果开启了定时，启动定时器
+  if (timerEnabled.value && timerMinutes.value > 0) {
+    if (timerId.value !== null) {
+      clearTimeout(timerId.value);
+    }
+    timerId.value = setTimeout(() => {
+      uni.$emit('stopDynamicLight');
+      // 定时关闭时，恢复为默认白色，而不是黑色
+      const defaultColor = { r: 255, g: 255, b: 255 };
+      uni.setStorageSync('currentColor', defaultColor);
+      uni.$emit('colorChanged', defaultColor);
+      uni.showToast({
+        title: '定时关闭',
+        icon: 'none',
+        duration: 2000
+      });
+      timerId.value = null;
+    }, timerMinutes.value * 60 * 1000) as any;
+  }
   
   // 保存百变光源设置
   if (mode.value === 'dynamic') {
     uni.setStorageSync('dynamicSettings', {
       enabled: dynamicEnabled.value,
       colors: selectedDynamicColors.value,
-      frequency: switchFrequency.value
+      frequency: switchFrequency.value,
+      gradient: gradientEnabled.value
     });
     
     // 如果开启了百变光源，启动循环
@@ -830,7 +1529,8 @@ const handleConfirm = () => {
       uni.setStorageSync('dynamicMode', true);
       uni.$emit('startDynamicLight', {
         colors: selectedDynamicColors.value,
-        frequency: switchFrequency.value
+        frequency: switchFrequency.value,
+        gradient: gradientEnabled.value
       });
     } else {
       uni.setStorageSync('dynamicMode', false);
@@ -843,8 +1543,44 @@ const handleConfirm = () => {
     
     // 保存当前颜色到存储
     uni.setStorageSync('currentColor', { ...localColor.value });
-    // 通过事件通知首页更新颜色
+    // 通过事件通知首页更新颜色和亮度
     uni.$emit('colorChanged', { ...localColor.value });
+    uni.$emit('brightnessChanged', brightness.value);
+    
+    // 记录使用历史
+    const history = uni.getStorageSync('colorHistory') || [];
+    const newHistoryItem: ColorDetail & { timestamp: number } = {
+      ...localColor.value,
+      name: mode.value === 'scene' && selectedScene.value
+        ? sceneModes.find(s => s.id === selectedScene.value)?.name || '自定义颜色'
+        : '自定义颜色',
+      description: '',
+      timestamp: Date.now()
+    };
+    history.unshift(newHistoryItem);
+    // 只保留最近50条
+    const limitedHistory = history.slice(0, 50);
+    uni.setStorageSync('colorHistory', limitedHistory);
+    
+    // 更新使用统计
+    const stats = uni.getStorageSync('usageStats') || { totalTime: 0, count: 0, colorUsage: {} };
+    stats.count = (stats.count || 0) + 1;
+    const colorKey = `${localColor.value.r}-${localColor.value.g}-${localColor.value.b}`;
+    stats.colorUsage = stats.colorUsage || {};
+    stats.colorUsage[colorKey] = (stats.colorUsage[colorKey] || 0) + 1;
+    
+    // 找出最常用颜色
+    let maxCount = 0;
+    let mostUsed = null;
+    for (const key in stats.colorUsage) {
+      if (stats.colorUsage[key] > maxCount) {
+        maxCount = stats.colorUsage[key];
+        const [r, g, b] = key.split('-').map(Number);
+        mostUsed = { r, g, b, name: '自定义颜色', description: '' } as ColorDetail;
+      }
+    }
+    stats.mostUsedColor = mostUsed as ColorDetail | null;
+    uni.setStorageSync('usageStats', stats);
   }
   
   uni.navigateBack();
@@ -881,6 +1617,12 @@ const handleConfirm = () => {
   display: flex;
   align-items: center;
   gap: 20rpx;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
 }
 
 .back-btn {
@@ -1303,6 +2045,477 @@ const handleConfirm = () => {
   font-size: 26rpx;
   color: #007aff;
   font-weight: 500;
+}
+
+// 场景模式样式
+.scene-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.scene-card {
+  padding: 30rpx;
+  border-radius: 16rpx;
+  background-color: #f8f8f8;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+
+  &.active {
+    background-color: #e6f3ff;
+    border-color: #007aff;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.scene-icon {
+  font-size: 60rpx;
+  margin-bottom: 8rpx;
+}
+
+.scene-name {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.scene-desc {
+  font-size: 24rpx;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+}
+
+// 亮度调节样式
+.brightness-value {
+  font-size: 28rpx;
+  color: #007aff;
+  font-weight: 600;
+}
+
+.brightness-control {
+  margin-top: 20rpx;
+  padding: 0 10rpx;
+}
+
+// 定时功能样式
+.timer-controls {
+  margin-top: 20rpx;
+}
+
+.timer-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.timer-preset-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  background-color: #f5f5f5;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &.active {
+    background-color: #007aff;
+    border-color: #007aff;
+
+    .timer-preset-text {
+      color: #ffffff;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.timer-preset-text {
+  font-size: 26rpx;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.timer-custom {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.timer-label {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.timer-input {
+  flex: 1;
+  height: 60rpx;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 8rpx;
+  padding: 0 16rpx;
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+  background-color: #ffffff;
+  max-width: 200rpx;
+}
+
+.timer-unit {
+  font-size: 28rpx;
+  color: #666;
+}
+
+// 使用统计样式
+.stats-content {
+  margin-top: 20rpx;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.stat-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.stat-value {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.stat-color {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.color-preview {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #e5e5e5;
+}
+
+.stat-color-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.clear-btn {
+  font-size: 26rpx;
+  color: #007aff;
+  padding: 8rpx 16rpx;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+// 历史记录样式
+.history-cards {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.history-card {
+  padding: 24rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100rpx;
+
+  &.light-color {
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.history-name {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.history-time {
+  font-size: 24rpx;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+// 色温调节样式
+.temperature-value {
+  font-size: 28rpx;
+  color: #ff9500;
+  font-weight: 600;
+}
+
+.temperature-control {
+  margin-top: 20rpx;
+}
+
+.temperature-presets {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.temperature-preset-btn {
+  flex: 1;
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  background-color: #f5f5f5;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+
+  &.active {
+    background-color: #fff4e6;
+    border-color: #ff9500;
+
+    .temperature-preset-text {
+      color: #ff9500;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.temperature-preset-text {
+  font-size: 26rpx;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.temperature-slider {
+  padding: 0 10rpx;
+}
+
+// 渐变效果样式
+.gradient-tip {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background-color: #f0f7ff;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+// 预设方案样式
+.preset-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  font-size: 26rpx;
+  color: #007aff;
+  padding: 8rpx 16rpx;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.preset-list {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.preset-item {
+  padding: 24rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:active {
+    transform: scale(0.98);
+    background-color: #eeeeee;
+  }
+}
+
+.preset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.preset-name {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.preset-ops {
+  display: flex;
+  gap: 16rpx;
+}
+
+.preset-op-btn {
+  font-size: 24rpx;
+  color: #007aff;
+  padding: 4rpx 12rpx;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  &.delete {
+    color: #ff3b30;
+  }
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.preset-preview {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.preset-color {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid #e5e5e5;
+}
+
+.preset-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.preset-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+// 颜色对比样式
+.compare-btn {
+  font-size: 26rpx;
+  color: #007aff;
+  padding: 8rpx 16rpx;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.compare-view {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+}
+
+.compare-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.compare-label {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.compare-color {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 16rpx;
+  border: 3rpx solid #e5e5e5;
+}
+
+.compare-rgb {
+  font-size: 24rpx;
+  color: #666;
+  font-family: monospace;
+}
+
+.compare-actions {
+  display: flex;
+  gap: 20rpx;
+  width: 100%;
+  margin-top: 10rpx;
+}
+
+.compare-action-btn {
+  flex: 1;
+  padding: 16rpx;
+  background-color: #007aff;
+  color: #ffffff;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 26rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:active {
+    background-color: #0056b3;
+    transform: scale(0.98);
+  }
 }
 
 </style>
