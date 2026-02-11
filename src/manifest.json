@@ -192,7 +192,9 @@
             "splashScreens" : {
                 "startWindowIcon" : "unpackage/res/my_1024.png"
             },
-            "modules" : {},
+            "modules" : {
+                "Camera" : {}
+            },
             "permissions" : [
                 {
                     "name" : "ohos.permission.INTERNET",

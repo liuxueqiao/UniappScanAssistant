@@ -1,0 +1,40 @@
+{
+  "id": "harmony-camera-preview",
+  "displayName": "鸿蒙摄像头预览插件",
+  "version": "1.0.0",
+  "description": "用于在鸿蒙平台上实现摄像头画中画预览功能",
+  "keywords": [
+    "camera",
+    "harmony",
+    "preview",
+    "画中画"
+  ],
+  "repository": "",
+  "engines": {
+    "HBuilderX": "^3.1.0"
+  },
+  "dcloudext": {
+    "type": "uts",
+    "sale": {
+      "regular": {
+        "price": "0.00"
+      },
+      "source": "uni_modules"
+    }
+  },
+  "uni_modules": {
+    "dependencies": [],
+    "platforms": {
+      "app-harmony": {
+        "plugins": [
+          {
+            "type": "module",
+            "name": "harmony-camera-preview",
+            "class": "index.uts"
+          }
+        ]
+      }
+    }
+  }
+}
+
