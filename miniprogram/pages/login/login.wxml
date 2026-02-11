@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="card">
+    <view class="title">授权登录</view>
+    <view class="muted">用于加入小队、打卡、挑战排行</view>
+    <button class="btn" type="primary" loading="{{loading}}" bindtap="doLogin">微信授权登录</button>
+  </view>
+
+  <view class="card" wx:if="{{isDevtools}}">
+    <view class="title">开发模式</view>
+    <view class="muted">在开发者工具中可用，用于快速体验功能</view>
+    <view class="formRow">
+      <text class="label">Admin Key</text>
+      <input class="input" placeholder="对应后端 ADMIN_KEY" value="{{adminKey}}" bindinput="onInputAdminKey" />
+    </view>
+    <button class="btn" loading="{{devLoading}}" bindtap="doDevLogin">开发登录</button>
+  </view>
+</view>

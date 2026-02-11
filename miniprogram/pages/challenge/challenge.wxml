@@ -1,0 +1,32 @@
+<view class="container">
+  <view class="card" wx:if="{{challenge}}">
+    <view class="title">{{challenge.title}}</view>
+    <view class="muted">目标：减重 {{challenge.targetLossKg}} kg</view>
+    <view class="muted">周期：{{challenge.weekKey}} ~ {{endDateKey}}</view>
+    <view class="muted">已报名：{{challenge.joinedCount}} 人</view>
+    <button class="btn" type="primary" disabled="{{challenge.joined}}" loading="{{joining}}" bindtap="join">
+      {{challenge.joined ? '已报名' : '报名参加'}}
+    </button>
+  </view>
+
+  <view class="card">
+    <view class="title">小队周榜</view>
+    <view class="muted" wx:if="{{!rankItems.length}}">暂无排行（需加入小队并报名挑战）</view>
+    <block wx:for="{{rankItems}}" wx:key="userId">
+      <view class="row">
+        <view class="left">
+          <image class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+          <view class="name">{{item.nickname || '匿名'}}</view>
+        </view>
+        <view class="right">
+          <view class="delta">{{item.deltaText}}</view>
+          <view class="muted">减重比例：{{item.lossRateText}}</view>
+        </view>
+      </view>
+      <view class="muted selfInfo" wx:if="{{item.startWeightKg !== undefined}}">
+        我的体重：{{item.startWeightKg}}kg → {{item.endWeightKg}}kg
+      </view>
+    </block>
+  </view>
+</view>
+

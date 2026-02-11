@@ -1,0 +1,27 @@
+<view class="container">
+  <view class="card">
+    <view class="title">瘦身圈</view>
+    <view class="muted">小队挑战 + 排行榜 + 打卡 + 励志内容</view>
+    <button class="btn" type="primary" bindtap="goCheckin">去打卡</button>
+    <button class="btn" bindtap="goTeam">我的小队</button>
+    <button class="btn" bindtap="goChallenge">本周挑战</button>
+    <button class="btn" bindtap="goProfile">个人资料</button>
+    <button class="btn" wx:if="{{!hasToken}}" bindtap="goLogin">授权登录</button>
+  </view>
+
+  <view class="card">
+    <view class="title">励志内容</view>
+    <swiper autoplay circular interval="4000" duration="400" style="height: 260rpx" wx:if="{{articles.length}}">
+      <block wx:for="{{articles}}" wx:key="id">
+        <swiper-item>
+          <view class="article" bindtap="openArticle" data-id="{{item.id}}">
+            <image class="cover" mode="aspectFill" src="{{item.coverUrl}}" wx:if="{{item.coverUrl}}"></image>
+            <view class="articleTitle">{{item.title}}</view>
+          </view>
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class="muted" wx:else>暂无内容</view>
+  </view>
+</view>
+

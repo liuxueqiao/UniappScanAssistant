@@ -1,0 +1,54 @@
+.formRow {
+  display: flex;
+  align-items: center;
+  margin-top: 18rpx;
+}
+
+.label {
+  width: 180rpx;
+  color: #333;
+  font-size: 28rpx;
+}
+
+.input {
+  flex: 1;
+  background: #f6f6f6;
+  border-radius: 12rpx;
+  padding: 18rpx;
+  font-size: 28rpx;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  background: #f0f0f0;
+}
+
+.info {
+  flex: 1;
+  margin-left: 16rpx;
+}
+
+.name {
+  font-size: 30rpx;
+  color: #222;
+}
+
+.delta {
+  width: 190rpx;
+  text-align: right;
+}
+
+.deltaNum {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+

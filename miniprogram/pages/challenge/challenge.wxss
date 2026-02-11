@@ -1,0 +1,38 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 28rpx;
+  background: #f0f0f0;
+}
+
+.name {
+  margin-left: 12rpx;
+  font-size: 30rpx;
+  color: #222;
+}
+
+.right {
+  text-align: right;
+}
+
+.delta {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.selfInfo {
+  padding: 10rpx 0 18rpx;
+}
+

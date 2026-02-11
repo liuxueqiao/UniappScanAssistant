@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/checkin/checkin",
+    "pages/team/team",
+    "pages/challenge/challenge",
+    "pages/profile/profile",
+    "pages/article/article"
+  ],
+  "window": {
+    "navigationBarTitleText": "瘦搭子",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

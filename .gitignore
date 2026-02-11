@@ -11,6 +11,8 @@ node_modules
 .DS_Store
 dist
 *.local
+.env
+backend/.env
 
 # Editor directories and files
 .idea
@@ -26,4 +28,3 @@ components.d.*
 auto-imports.d.*
 helper.json
 unpackage
-

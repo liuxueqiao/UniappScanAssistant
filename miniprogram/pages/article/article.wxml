@@ -1,0 +1,12 @@
+<view class="container">
+  <view class="card" wx:if="{{article}}">
+    <view class="title">{{article.title}}</view>
+    <view class="muted" wx:if="{{article.publishedAt}}">{{article.publishedAt}}</view>
+    <image class="cover" mode="aspectFill" src="{{article.coverUrl}}" wx:if="{{article.coverUrl}}"></image>
+    <rich-text nodes="{{article.content}}"></rich-text>
+  </view>
+  <view class="card" wx:else>
+    <view class="muted">加载中...</view>
+  </view>
+</view>
+

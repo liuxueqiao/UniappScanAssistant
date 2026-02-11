@@ -1,0 +1,14 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "projectname": "瘦搭子",
+  "description": "你的瘦搭子，正在等你打卡",
+  "appid": "wx0776e80ec23ca9ec",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram"
+}

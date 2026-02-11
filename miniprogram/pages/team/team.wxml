@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="card" wx:if="{{team}}">
+    <view class="title">{{team.name}}</view>
+    <view class="muted">邀请码：{{team.inviteCode}}</view>
+    <button class="btn" open-type="share">分享邀请码</button>
+    <button class="btn" type="warn" bindtap="leave">退出小队</button>
+  </view>
+
+  <view class="card" wx:else>
+    <view class="title">加入/创建小队</view>
+    <view class="muted">分享邀请码给熟人，一起坚持更容易</view>
+
+    <view class="formRow">
+      <text class="label">小队名称</text>
+      <input class="input" placeholder="例如：瘦身冲冲冲" value="{{createName}}" bindinput="onInputCreateName" />
+    </view>
+    <button class="btn" type="primary" loading="{{creating}}" bindtap="create">创建小队</button>
+
+    <view class="formRow">
+      <text class="label">邀请码</text>
+      <input class="input" placeholder="例如：8HX2K9AB" value="{{inviteCode}}" bindinput="onInputInviteCode" />
+    </view>
+    <button class="btn" loading="{{joining}}" bindtap="join">加入小队</button>
+  </view>
+
+  <view class="card" wx:if="{{team}}">
+    <view class="title">成员状态</view>
+    <view class="muted">他人只显示变化值，不显示原始体重</view>
+    <block wx:for="{{team.members}}" wx:key="userId">
+      <view class="member">
+        <image class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+        <view class="info">
+          <view class="name">{{item.nickname || '匿名'}}</view>
+          <view class="muted">今日打卡：{{item.checkedInToday ? '已打卡' : '未打卡'}}</view>
+        </view>
+        <view class="delta">
+          <view class="deltaNum">{{item.weekDeltaText}}</view>
+          <view class="muted">本周变化</view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

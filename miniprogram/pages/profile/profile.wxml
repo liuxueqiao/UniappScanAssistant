@@ -1,0 +1,24 @@
+<view class="container">
+  <view class="card">
+    <view class="title">个人资料</view>
+    <view class="muted">用于计算挑战完成情况与减重比例</view>
+
+    <view class="formRow">
+      <text class="label">初始体重(kg)</text>
+      <input class="input" type="digit" placeholder="例如 75" value="{{initialWeightKg}}" bindinput="onInputInitial" />
+    </view>
+
+    <view class="formRow">
+      <text class="label">目标体重(kg)</text>
+      <input class="input" type="digit" placeholder="例如 65" value="{{targetWeightKg}}" bindinput="onInputTarget" />
+    </view>
+
+    <view class="formRow">
+      <text class="label">身高(cm)</text>
+      <input class="input" type="number" placeholder="可选" value="{{heightCm}}" bindinput="onInputHeight" />
+    </view>
+
+    <button class="btn" type="primary" loading="{{saving}}" bindtap="save">保存</button>
+  </view>
+</view>
+
