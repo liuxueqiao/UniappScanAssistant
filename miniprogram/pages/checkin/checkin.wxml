@@ -1,26 +1,41 @@
 <view class="container">
-  <view class="card">
-    <view class="title">每日打卡</view>
-    <view class="muted">每天仅可提交一次体重，记录会保留历史</view>
-
-    <view class="formRow">
-      <text class="label">体重(kg)</text>
-      <input class="input" type="digit" placeholder="例如 68.5" value="{{weightKg}}" bindinput="onInputWeight" />
-    </view>
-
-    <button class="btn" type="primary" loading="{{submitting}}" bindtap="submit">提交打卡</button>
-    <view class="muted" wx:if="{{streakDays}}">连续打卡：{{streakDays}} 天</view>
+  <!-- Header Date -->
+  <view class="date-header">
+    <view class="text-secondary-light">今天是</view>
+    <view class="text-xl">{{todayDate}}</view>
   </view>
 
-  <view class="card">
-    <view class="title">最近记录</view>
-    <view class="muted" wx:if="{{!history.length}}">暂无记录</view>
-    <block wx:for="{{history}}" wx:key="id">
-      <view class="row">
-        <text>{{item.dateKey}}</text>
-        <text>{{item.weightKg}}kg</text>
+  <!-- Input Card -->
+  <view class="input-card">
+    <view class="input-label">记录今天的体重</view>
+    <view class="input-wrapper">
+      <input class="weight-input" type="digit" placeholder="0.0" value="{{weightKg}}" bindinput="onInputWeight" />
+      <text class="unit">kg</text>
+    </view>
+    <view class="streak-badge" wx:if="{{streakDays > 0}}">
+      <text>🔥</text> 已连续打卡 {{streakDays}} 天
+    </view>
+    <button class="btn btn-block" loading="{{submitting}}" bindtap="submit">确认打卡</button>
+  </view>
+
+  <!-- History List -->
+  <view class="history-section">
+    <view class="section-title">历史记录</view>
+    <view class="history-list">
+      <view class="empty-state" wx:if="{{!history.length}}">
+        <text style="font-size: 64rpx; margin-bottom: 16rpx;">📝</text>
+        <text class="text-secondary">暂无记录，快来打卡吧</text>
       </view>
-    </block>
+      <block wx:for="{{history}}" wx:key="id">
+        <view class="history-item">
+          <view class="item-date">
+            <text>📅</text> {{item.dateKey}}
+          </view>
+          <view class="item-val">
+            {{item.weightKg}} <text class="item-unit">kg</text>
+          </view>
+        </view>
+      </block>
+    </view>
   </view>
 </view>
-

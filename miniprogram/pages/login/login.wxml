@@ -1,17 +1,35 @@
-<view class="container">
-  <view class="card">
-    <view class="title">授权登录</view>
-    <view class="muted">用于加入小队、打卡、挑战排行</view>
-    <button class="btn" type="primary" loading="{{loading}}" bindtap="doLogin">微信授权登录</button>
+<view class="container login-container">
+  <!-- Background Decoration -->
+  <view class="bg-decoration"></view>
+
+  <view class="logo-box">
+    <view class="logo">
+      <image class="logo-icon" src="/images/logo.png" mode="aspectFill"></image>
+    </view>
+    <view class="app-name">瘦搭子</view>
+    <view class="app-slogan">你的瘦身搭子，正在等你打卡</view>
   </view>
 
-  <view class="card" wx:if="{{isDevtools}}">
-    <view class="title">开发模式</view>
-    <view class="muted">在开发者工具中可用，用于快速体验功能</view>
-    <view class="formRow">
-      <text class="label">Admin Key</text>
-      <input class="input" placeholder="对应后端 ADMIN_KEY" value="{{adminKey}}" bindinput="onInputAdminKey" />
+  <view class="card login-card">
+    <view class="text-h2 text-center" style="margin-bottom: 16rpx;">欢迎回来</view>
+    <view class="text-desc text-center" style="margin-bottom: 56rpx;">
+      登录后加入小队，与朋友一起变瘦
     </view>
-    <button class="btn" loading="{{devLoading}}" bindtap="doDevLogin">开发登录</button>
+    
+    <button class="btn btn-block" loading="{{loading}}" bindtap="doLogin">
+      微信一键登录
+    </button>
+  </view>
+
+  <!-- Dev Login -->
+  <view class="dev-box" wx:if="{{isDevtools}}">
+    <view class="divider">开发调试</view>
+    <view class="card">
+      <view class="text-h3" style="margin-bottom:24rpx;">模拟登录</view>
+      <input class="input-field" placeholder="输入 Admin Key" value="{{adminKey}}" bindinput="onInputAdminKey" />
+      <button class="btn btn-secondary btn-block" loading="{{devLoading}}" bindtap="doDevLogin">
+        开发登录
+      </button>
+    </view>
   </view>
 </view>

@@ -5,22 +5,44 @@ Page({
     challenge: null,
     joining: false,
     rankItems: [],
-    endDateKey: ""
+    endDateKey: "",
+    daysLeft: 0,
   },
 
   onShow() {
-    this.loadCurrent();
-    this.loadRank();
+    this.loadData();
+  },
+
+  onPullDownRefresh() {
+    this.loadData().then(() => {
+      wx.stopPullDownRefresh();
+    });
+  },
+
+  async loadData() {
+    await Promise.all([this.loadCurrent(), this.loadRank()]);
   },
 
   async loadCurrent() {
     try {
-      const data = await request({ path: "/api/challenges/current", method: "GET" });
+      const data = await request({
+        path: "/api/challenges/current",
+        method: "GET",
+      });
       const challenge = data.challenge || null;
-      const endDateKey = challenge?.endAt ? String(challenge.endAt).slice(0, 10) : "";
-      this.setData({ challenge, endDateKey });
+      let endDateKey = "";
+      let daysLeft = 0;
+
+      if (challenge?.endAt) {
+        endDateKey = String(challenge.endAt).slice(0, 10);
+        const end = new Date(challenge.endAt).getTime();
+        const now = new Date().getTime();
+        daysLeft = Math.max(0, Math.ceil((end - now) / (1000 * 60 * 60 * 24)));
+      }
+
+      this.setData({ challenge, endDateKey, daysLeft });
     } catch (err) {
-      this.setData({ challenge: null, endDateKey: "" });
+      this.setData({ challenge: null, endDateKey: "", daysLeft: 0 });
     }
   },
 
@@ -43,11 +65,14 @@ Page({
 
   async loadRank() {
     try {
-      const data = await request({ path: "/api/challenges/team-rank", method: "GET" });
+      const data = await request({
+        path: "/api/challenges/team-rank",
+        method: "GET",
+      });
       const items = (data.items || []).map((x) => ({
         ...x,
         deltaText: this.formatDelta(x.deltaKg),
-        lossRateText: this.formatRate(x.lossRate)
+        lossRateText: this.formatRate(x.lossRate),
       }));
       this.setData({ rankItems: items });
     } catch (err) {
@@ -66,6 +91,9 @@ Page({
   formatRate(rate) {
     if (typeof rate !== "number") return "--";
     return `${(rate * 100).toFixed(2)}%`;
-  }
-});
+  },
 
+  goBack() {
+    wx.navigateBack();
+  },
+});

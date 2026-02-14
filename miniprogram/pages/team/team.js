@@ -13,6 +13,12 @@ Page({
     this.loadTeam();
   },
 
+  onPullDownRefresh() {
+    this.loadTeam().then(() => {
+      wx.stopPullDownRefresh();
+    });
+  },
+
   onShareAppMessage() {
     const code = this.data.team?.inviteCode || "";
     return {
@@ -33,6 +39,18 @@ Page({
 
   onInputInviteCode(e) {
     this.setData({ inviteCode: e.detail.value });
+  },
+
+  copyCode(e) {
+    const code = e.currentTarget.dataset.code;
+    if (code) {
+      wx.setClipboardData({
+        data: code,
+        success: () => {
+          wx.showToast({ title: "邀请码已复制", icon: "none" });
+        }
+      });
+    }
   },
 
   async loadTeam() {
@@ -107,11 +125,18 @@ Page({
 
   async leave() {
     try {
-      await request({ path: "/api/teams/leave", method: "POST" });
-      wx.showToast({ title: "已退出", icon: "success" });
-      this.loadTeam();
+      const res = await wx.showModal({
+        title: "确认退出",
+        content: "退出后将无法查看小队数据，是否继续？",
+        confirmColor: "#f56c6c"
+      });
+      if (res.confirm) {
+        await request({ path: "/api/teams/leave", method: "POST" });
+        wx.showToast({ title: "已退出", icon: "success" });
+        this.loadTeam();
+      }
     } catch (err) {
-      wx.showToast({ title: err.message || "操作失败", icon: "none" });
+      // wx.showToast({ title: err.message || "操作失败", icon: "none" });
     }
   },
 });

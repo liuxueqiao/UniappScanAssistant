@@ -10,8 +10,9 @@
   ],
   "window": {
     "navigationBarTitleText": "瘦搭子",
-    "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#1abc9c",
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "default",
     "backgroundTextStyle": "light"
   },
   "style": "v2",

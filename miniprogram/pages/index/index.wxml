@@ -1,27 +1,90 @@
 <view class="container">
-  <view class="card">
-    <view class="title">瘦身圈</view>
-    <view class="muted">小队挑战 + 排行榜 + 打卡 + 励志内容</view>
-    <button class="btn" type="primary" bindtap="goCheckin">去打卡</button>
-    <button class="btn" bindtap="goTeam">我的小队</button>
-    <button class="btn" bindtap="goChallenge">本周挑战</button>
-    <button class="btn" bindtap="goProfile">个人资料</button>
-    <button class="btn" wx:if="{{!hasToken}}" bindtap="goLogin">授权登录</button>
+  <!-- Header Section -->
+  <view class="header-section">
+    <view class="greeting">
+      <view class="user-info">
+        <view class="text-greeting">Hi, {{user.nickname || '搭子'}}</view>
+        <view class="text-subtitle">坚持就是胜利，今天也要加油哦！</view>
+      </view>
+      <image class="avatar" src="{{user.avatarUrl}}" wx:if="{{user.avatarUrl}}" mode="aspectFill"></image>
+      <view class="avatar" wx:else></view>
+    </view>
   </view>
 
-  <view class="card">
-    <view class="title">励志内容</view>
-    <swiper autoplay circular interval="4000" duration="400" style="height: 260rpx" wx:if="{{articles.length}}">
-      <block wx:for="{{articles}}" wx:key="id">
-        <swiper-item>
-          <view class="article" bindtap="openArticle" data-id="{{item.id}}">
-            <image class="cover" mode="aspectFill" src="{{item.coverUrl}}" wx:if="{{item.coverUrl}}"></image>
-            <view class="articleTitle">{{item.title}}</view>
-          </view>
-        </swiper-item>
-      </block>
-    </swiper>
-    <view class="muted" wx:else>暂无内容</view>
+  <!-- Stats Card (Overlapping) -->
+  <view class="stats-card" wx:if="{{hasToken}}">
+    <view class="stat-item">
+      <view class="stat-num">{{user.streakDays || 0}}</view>
+      <view class="stat-label">坚持天数</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-num {{user.weightChange >= 0 ? 'text-primary' : 'text-primary'}}">
+        {{user.weightChange > 0 ? '+' : ''}}{{user.weightChange || 0}}
+      </view>
+      <view class="stat-label">累计变化(kg)</view>
+    </view>
+  </view>
+
+  <!-- Login Prompt (if no token) -->
+  <view class="card login-prompt" wx:else>
+    <view class="text-h2" style="margin-bottom:16rpx;">尚未登录</view>
+    <view class="text-desc" style="margin-bottom: 32rpx;">登录后同步数据，参与小队挑战</view>
+    <button class="btn btn-sm" bindtap="goLogin" style="width: 200rpx; margin: 0 auto;">立即登录</button>
+  </view>
+
+  <!-- Quick Actions Grid -->
+  <view class="grid-menu">
+    <view class="menu-item main-action" bindtap="goCheckin">
+      <view class="icon-box bg-primary">
+        <text>⚖️</text>
+      </view>
+      <view class="menu-content">
+        <view class="menu-label">每日打卡</view>
+        <view class="menu-desc">记录今天的体重</view>
+      </view>
+    </view>
+    
+    <view class="menu-item" bindtap="goTeam">
+      <view class="icon-box bg-blue">
+        <text>👥</text>
+      </view>
+      <view class="menu-label">我的小队</view>
+    </view>
+
+    <view class="menu-item" bindtap="goChallenge">
+      <view class="icon-box bg-orange">
+        <text>🏆</text>
+      </view>
+      <view class="menu-label">本周挑战</view>
+    </view>
+    
+    <view class="menu-item" bindtap="goProfile">
+      <view class="icon-box bg-purple">
+        <text>👤</text>
+      </view>
+      <view class="menu-label">个人中心</view>
+    </view>
+  </view>
+
+  <!-- Content Swiper -->
+  <view class="section-title">每日励志</view>
+  <view class="swiper-wrapper">
+    <view class="swiper-card">
+      <swiper autoplay circular interval="5000" duration="500" style="height: 320rpx" wx:if="{{articles.length}}">
+        <block wx:for="{{articles}}" wx:key="id">
+          <swiper-item>
+            <view class="article-item" bindtap="openArticle" data-id="{{item.id}}">
+              <image class="article-cover" mode="aspectFill" src="{{item.coverUrl || 'https://via.placeholder.com/600x300?text=Health'}}"></image>
+              <view class="article-overlay">
+                <view class="article-title text-ellipsis">{{item.title}}</view>
+              </view>
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+      <view class="empty-state" wx:else>
+        <view class="text-secondary text-center" style="padding: 60rpx;">暂无内容，敬请期待</view>
+      </view>
+    </view>
   </view>
 </view>
-

@@ -1,19 +1,108 @@
-.formRow {
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--bg-color);
+  position: relative;
+  overflow: hidden;
+  padding: 0 48rpx;
+}
+
+/* Background Decoration */
+.bg-decoration {
+  position: absolute;
+  top: -200rpx;
+  right: -200rpx;
+  width: 600rpx;
+  height: 600rpx;
+  background: radial-gradient(circle, var(--primary-light) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.logo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 80rpx;
+  z-index: 1;
+}
+
+.logo {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 40rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 12rpx 32rpx var(--primary-light);
   display: flex;
   align-items: center;
-  margin-top: 18rpx;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+}
+.logo-icon {
+  width: 100%;
+  height: 100%;
 }
 
-.label {
-  width: 180rpx;
-  color: #333;
-  font-size: 28rpx;
+.app-name {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 16rpx;
+  letter-spacing: 2rpx;
 }
 
-.input {
-  flex: 1;
-  background: #f6f6f6;
-  border-radius: 12rpx;
-  padding: 18rpx;
+.app-slogan {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.login-card {
+  padding: 64rpx 48rpx;
+  z-index: 1;
+  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.06);
+}
+
+.divider {
+  text-align: center;
+  font-size: 24rpx;
+  color: #ccc;
+  margin: 60rpx 0 30rpx;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 1rpx;
+  background-color: #eee;
+}
+
+.divider::before { left: 10%; }
+.divider::after { right: 10%; }
+
+.input-field {
+  background: #f9f9f9;
+  padding: 24rpx 32rpx;
+  border-radius: 44rpx;
   font-size: 28rpx;
+  border: 1rpx solid transparent;
+  transition: all 0.3s;
+}
+.input-field:focus {
+  background: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4rpx var(--primary-light);
+}
+
+.dev-box {
+  margin-top: 40rpx;
+  opacity: 0.8;
+  z-index: 1;
 }

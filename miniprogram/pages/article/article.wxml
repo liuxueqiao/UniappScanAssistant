@@ -1,12 +1,41 @@
 <view class="container">
-  <view class="card" wx:if="{{article}}">
-    <view class="title">{{article.title}}</view>
-    <view class="muted" wx:if="{{article.publishedAt}}">{{article.publishedAt}}</view>
-    <image class="cover" mode="aspectFill" src="{{article.coverUrl}}" wx:if="{{article.coverUrl}}"></image>
-    <rich-text nodes="{{article.content}}"></rich-text>
+  <!-- 加载中状态 -->
+  <view class="loading-state" wx:if="{{!article && loading}}">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">加载中...</view>
   </view>
-  <view class="card" wx:else>
-    <view class="muted">加载中...</view>
+
+  <!-- 文章内容 -->
+  <block wx:elif="{{article}}">
+    <image class="article-cover" mode="aspectFill" src="{{article.coverUrl}}" wx:if="{{article.coverUrl}}"></image>
+    
+    <view class="article-content">
+      <view class="article-header">
+        <view class="article-title">{{article.title}}</view>
+        <view class="article-meta">
+          <text class="article-date" wx:if="{{article.publishedAt}}">{{article.publishedAt}}</text>
+          <text class="article-author">健康小助手</text>
+          <text class="article-views" wx:if="{{article.views}}">{{article.views}} 阅读</text>
+        </view>
+      </view>
+      
+      <view class="rich-text-wrapper">
+        <rich-text nodes="{{article.content}}"></rich-text>
+      </view>
+
+      <!-- 底部操作栏 -->
+      <view class="article-actions">
+        <button class="action-btn share-btn" open-type="share">
+          <text>转发给好友</text>
+        </button>
+      </view>
+    </view>
+  </block>
+
+  <!-- 空状态/错误状态 -->
+  <view class="empty-state" wx:elif="{{!loading}}">
+    <image class="empty-icon" src="/images/empty-article.png" mode="aspectFit" wx:if="{{false}}"></image>
+    <view class="empty-text">文章不存在或已删除</view>
+    <button class="btn-back" bindtap="goBack">返回上一页</button>
   </view>
 </view>
-

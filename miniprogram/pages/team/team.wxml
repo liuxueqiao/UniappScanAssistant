@@ -1,43 +1,69 @@
 <view class="container">
-  <view class="card" wx:if="{{team}}">
-    <view class="title">{{team.name}}</view>
-    <view class="muted">邀请码：{{team.inviteCode}}</view>
-    <button class="btn" open-type="share">分享邀请码</button>
-    <button class="btn" type="warn" bindtap="leave">退出小队</button>
-  </view>
-
-  <view class="card" wx:else>
-    <view class="title">加入/创建小队</view>
-    <view class="muted">分享邀请码给熟人，一起坚持更容易</view>
-
-    <view class="formRow">
-      <text class="label">小队名称</text>
-      <input class="input" placeholder="例如：瘦身冲冲冲" value="{{createName}}" bindinput="onInputCreateName" />
-    </view>
-    <button class="btn" type="primary" loading="{{creating}}" bindtap="create">创建小队</button>
-
-    <view class="formRow">
-      <text class="label">邀请码</text>
-      <input class="input" placeholder="例如：8HX2K9AB" value="{{inviteCode}}" bindinput="onInputInviteCode" />
-    </view>
-    <button class="btn" loading="{{joining}}" bindtap="join">加入小队</button>
-  </view>
-
-  <view class="card" wx:if="{{team}}">
-    <view class="title">成员状态</view>
-    <view class="muted">他人只显示变化值，不显示原始体重</view>
-    <block wx:for="{{team.members}}" wx:key="userId">
-      <view class="member">
-        <image class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
-        <view class="info">
-          <view class="name">{{item.nickname || '匿名'}}</view>
-          <view class="muted">今日打卡：{{item.checkedInToday ? '已打卡' : '未打卡'}}</view>
-        </view>
-        <view class="delta">
-          <view class="deltaNum">{{item.weekDeltaText}}</view>
-          <view class="muted">本周变化</view>
-        </view>
+  <!-- State: Has Team -->
+  <block wx:if="{{team}}">
+    <!-- Team Header -->
+    <view class="team-header">
+      <view class="team-name">{{team.name}}</view>
+      <view class="team-code" bindtap="copyCode" data-code="{{team.inviteCode}}">
+        <text class="code-label">邀请码</text>
+        <text class="code-val">{{team.inviteCode}}</text>
+        <text class="copy-icon">📄</text>
       </view>
-    </block>
-  </view>
+      <button class="btn share-btn" open-type="share">邀请好友加入</button>
+    </view>
+
+    <!-- Member List -->
+    <view class="section-title">小队成员 ({{team.members.length}}人)</view>
+    <view class="member-list">
+      <block wx:for="{{team.members}}" wx:key="userId">
+        <view class="member-item">
+          <view class="member-left">
+            <image class="avatar" src="{{item.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" mode="aspectFill"></image>
+            <view class="member-info">
+              <view class="member-name">{{item.nickname || '神秘队友'}}</view>
+              <view class="checkin-status {{item.checkedInToday ? 'active' : ''}}">
+                {{item.checkedInToday ? '✅ 今日已打卡' : '⭕️ 今日未打卡'}}
+              </view>
+            </view>
+          </view>
+          <view class="member-right">
+            <view class="delta-val {{item.weekDeltaKg > 0 ? 'text-success' : (item.weekDeltaKg < 0 ? 'text-danger' : 'text-muted')}}">
+              {{item.weekDeltaText}}
+            </view>
+            <view class="text-xs">本周变化</view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view class="footer-actions">
+      <button class="btn btn-danger-outline" bindtap="leave">退出小队</button>
+    </view>
+  </block>
+
+  <!-- State: No Team -->
+  <block wx:else>
+    <view class="no-team-header">
+      <view class="text-xl">加入小队</view>
+      <view class="text-secondary">与好友一起坚持，互相监督</view>
+    </view>
+
+    <!-- Join Team -->
+    <view class="form-card">
+      <view class="card-title">我有邀请码</view>
+      <view class="input-group">
+        <input class="input" placeholder="输入邀请码" value="{{inviteCode}}" bindinput="onInputInviteCode" />
+        <button class="btn btn-sm" loading="{{joining}}" bindtap="join">加入</button>
+      </view>
+    </view>
+
+    <!-- Create Team -->
+    <view class="form-card">
+      <view class="card-title">创建新小队</view>
+      <view class="input-group">
+        <input class="input" placeholder="给小队起个名字" value="{{createName}}" bindinput="onInputCreateName" />
+        <button class="btn btn-sm" loading="{{creating}}" bindtap="create">创建</button>
+      </view>
+    </view>
+  </block>
 </view>

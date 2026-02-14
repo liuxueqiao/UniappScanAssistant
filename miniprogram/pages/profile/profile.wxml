@@ -1,24 +1,76 @@
 <view class="container">
-  <view class="card">
-    <view class="title">个人资料</view>
-    <view class="muted">用于计算挑战完成情况与减重比例</view>
+  <!-- Profile Header -->
+  <view class="header-section">
+    <view class="avatar-wrapper">
+      <open-data type="userAvatarUrl" class="avatar"></open-data>
+    </view>
+    <view class="nickname">
+      <open-data type="userNickName"></open-data>
+    </view>
+    <view class="text-secondary-light">设定目标，从今天开始改变</view>
+  </view>
 
-    <view class="formRow">
-      <text class="label">初始体重(kg)</text>
-      <input class="input" type="digit" placeholder="例如 75" value="{{initialWeightKg}}" bindinput="onInputInitial" />
+  <!-- Settings Form -->
+  <view class="form-card">
+    <view class="card-title">基本资料</view>
+    
+    <view class="form-item">
+      <view class="label">初始体重</view>
+      <view class="input-wrap">
+        <input class="input" type="digit" placeholder="0.0" value="{{initialWeightKg}}" bindinput="onInputInitial" />
+        <text class="unit">kg</text>
+      </view>
+    </view>
+    
+    <view class="form-item">
+      <view class="label">目标体重</view>
+      <view class="input-wrap">
+        <input class="input" type="digit" placeholder="0.0" value="{{targetWeightKg}}" bindinput="onInputTarget" />
+        <text class="unit">kg</text>
+      </view>
     </view>
 
-    <view class="formRow">
-      <text class="label">目标体重(kg)</text>
-      <input class="input" type="digit" placeholder="例如 65" value="{{targetWeightKg}}" bindinput="onInputTarget" />
+    <view class="form-item">
+      <view class="label">身高</view>
+      <view class="input-wrap">
+        <input class="input" type="number" placeholder="0" value="{{heightCm}}" bindinput="onInputHeight" />
+        <text class="unit">cm</text>
+      </view>
     </view>
 
-    <view class="formRow">
-      <text class="label">身高(cm)</text>
-      <input class="input" type="number" placeholder="可选" value="{{heightCm}}" bindinput="onInputHeight" />
+    <!-- BMI Display -->
+    <view class="bmi-card" wx:if="{{bmi}}">
+      <view class="bmi-value">
+        <text class="label">BMI</text>
+        <text class="value">{{bmi}}</text>
+      </view>
+      <view class="bmi-status status-{{bmiStatus === '正常' ? 'normal' : 'warning'}}">
+        {{bmiStatus}}
+      </view>
     </view>
 
-    <button class="btn" type="primary" loading="{{saving}}" bindtap="save">保存</button>
+    <!-- Weight Chart -->
+    <view class="chart-card" wx:if="{{history.length > 1}}">
+      <view class="card-title-sm">近7次体重变化</view>
+      <canvas type="2d" id="weightChart" class="chart-canvas"></canvas>
+    </view>
+
+    <button class="btn btn-block" loading="{{saving}}" bindtap="save">保存修改</button>
+  </view>
+
+  <!-- History List -->
+  <view class="history-section" wx:if="{{history.length > 0}}">
+    <view class="section-title">最近记录</view>
+    <view class="history-list">
+      <view class="history-item" wx:for="{{history}}" wx:key="id">
+        <text class="date">{{item.dateKey}}</text>
+        <text class="weight">{{item.weightKg}} <text class="unit">kg</text></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Footer Actions -->
+  <view class="footer-actions">
+    <button class="btn btn-danger-outline" bindtap="logout">退出登录</button>
   </view>
 </view>
-

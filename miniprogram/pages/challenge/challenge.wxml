@@ -1,32 +1,71 @@
 <view class="container">
-  <view class="card" wx:if="{{challenge}}">
-    <view class="title">{{challenge.title}}</view>
-    <view class="muted">目标：减重 {{challenge.targetLossKg}} kg</view>
-    <view class="muted">周期：{{challenge.weekKey}} ~ {{endDateKey}}</view>
-    <view class="muted">已报名：{{challenge.joinedCount}} 人</view>
-    <button class="btn" type="primary" disabled="{{challenge.joined}}" loading="{{joining}}" bindtap="join">
-      {{challenge.joined ? '已报名' : '报名参加'}}
+  <!-- 顶部背景 -->
+  <view class="header-bg"></view>
+
+  <!-- 顶部挑战卡片 -->
+  <view class="challenge-card" wx:if="{{challenge}}">
+    <view class="challenge-title">{{challenge.title}}</view>
+    <view class="challenge-period">
+      <text class="period-label">周期</text>
+      <text class="period-value">{{challenge.weekKey}} ~ {{endDateKey}}</text>
+    </view>
+    
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="stat-value">{{challenge.targetLossKg}}<text class="stat-unit">kg</text></view>
+        <view class="stat-label">目标减重</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{challenge.joinedCount}}<text class="stat-unit">人</text></view>
+        <view class="stat-label">已报名</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{daysLeft}}<text class="stat-unit">天</text></view>
+        <view class="stat-label">剩余时间</view>
+      </view>
+    </view>
+
+    <button class="btn-join {{challenge.joined ? 'joined' : ''}}" hover-class="btn-hover" bindtap="join" loading="{{joining}}" disabled="{{challenge.joined}}">
+      {{challenge.joined ? '已报名参与' : '立即报名挑战'}}
     </button>
   </view>
 
-  <view class="card">
-    <view class="title">小队周榜</view>
-    <view class="muted" wx:if="{{!rankItems.length}}">暂无排行（需加入小队并报名挑战）</view>
-    <block wx:for="{{rankItems}}" wx:key="userId">
-      <view class="row">
-        <view class="left">
-          <image class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
-          <view class="name">{{item.nickname || '匿名'}}</view>
+  <!-- 排行榜区域 -->
+  <view class="rank-section">
+    <view class="section-header">
+      <view class="section-title">小队周榜</view>
+      <view class="section-subtitle">Top 10</view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!rankItems.length}}">
+      <image class="empty-icon" src="/images/empty-rank.png" mode="aspectFit" wx:if="{{false}}"></image>
+      <view class="empty-text">暂无排行数据</view>
+      <view class="empty-subtext">加入小队并报名挑战，开始你的减重之旅</view>
+    </view>
+
+    <view class="rank-list" wx:else>
+      <block wx:for="{{rankItems}}" wx:key="userId">
+        <view class="rank-item {{index < 3 ? 'top-rank' : ''}}">
+          <view class="rank-num {{index === 0 ? 'first' : (index === 1 ? 'second' : (index === 2 ? 'third' : ''))}}">{{index + 1}}</view>
+          
+          <view class="user-info">
+            <image class="avatar" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+            <view class="user-detail">
+              <view class="username">{{item.nickname || '匿名用户'}}</view>
+              <view class="user-meta" wx:if="{{item.startWeightKg}}">
+                初始 {{item.startWeightKg}}kg <text class="arrow">→</text> 当前 {{item.endWeightKg}}kg
+              </view>
+            </view>
+          </view>
+          
+          <view class="rank-stats">
+            <view class="loss-rate {{item.lossRate > 0 ? 'positive' : 'negative'}}">
+              {{item.lossRateText}}
+            </view>
+            <view class="loss-value">{{item.deltaText}}</view>
+          </view>
         </view>
-        <view class="right">
-          <view class="delta">{{item.deltaText}}</view>
-          <view class="muted">减重比例：{{item.lossRateText}}</view>
-        </view>
-      </view>
-      <view class="muted selfInfo" wx:if="{{item.startWeightKg !== undefined}}">
-        我的体重：{{item.startWeightKg}}kg → {{item.endWeightKg}}kg
-      </view>
-    </block>
+      </block>
+    </view>
   </view>
 </view>
-

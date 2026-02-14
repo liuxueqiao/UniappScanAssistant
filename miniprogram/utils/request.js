@@ -20,6 +20,16 @@ function request({ path, method, data, query, headers }) {
         ...(headers || {}),
       },
       success(res) {
+        if (res.statusCode === 401) {
+          wx.removeStorageSync("token");
+          wx.showToast({ title: "登录已过期", icon: "none" });
+          setTimeout(() => {
+            wx.reLaunch({ url: "/pages/login/login" });
+          }, 1500);
+          reject(new Error("Unauthorized"));
+          return;
+        }
+
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
           return;

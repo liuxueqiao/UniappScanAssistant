@@ -4,7 +4,9 @@ async function getMe(req, res, next) {
   try {
     const user = await User.findById(req.user.id).lean();
     if (!user) {
-      return res.status(404).json({ error: { code: "NOT_FOUND", message: "User not found" } });
+      return res
+        .status(401)
+        .json({ error: { code: "UNAUTHORIZED", message: "User not found" } });
     }
     return res.json({
       user: {
@@ -15,8 +17,8 @@ async function getMe(req, res, next) {
         targetWeightKg: user.targetWeightKg,
         heightCm: user.heightCm,
         teamId: user.teamId ? String(user.teamId) : null,
-        streakDays: user.streakDays
-      }
+        streakDays: user.streakDays,
+      },
     });
   } catch (err) {
     return next(err);
@@ -35,19 +37,25 @@ async function updateProfile(req, res, next) {
     const targetWeightKg = numberOrNull(req.body?.targetWeightKg);
     const heightCm = numberOrNull(req.body?.heightCm);
 
-    if (initialWeightKg != null && (initialWeightKg < 20 || initialWeightKg > 300)) {
+    if (
+      initialWeightKg != null &&
+      (initialWeightKg < 20 || initialWeightKg > 300)
+    ) {
       return res.status(400).json({
-        error: { code: "BAD_REQUEST", message: "initialWeightKg out of range" }
+        error: { code: "BAD_REQUEST", message: "initialWeightKg out of range" },
       });
     }
-    if (targetWeightKg != null && (targetWeightKg < 20 || targetWeightKg > 300)) {
+    if (
+      targetWeightKg != null &&
+      (targetWeightKg < 20 || targetWeightKg > 300)
+    ) {
       return res.status(400).json({
-        error: { code: "BAD_REQUEST", message: "targetWeightKg out of range" }
+        error: { code: "BAD_REQUEST", message: "targetWeightKg out of range" },
       });
     }
     if (heightCm != null && (heightCm < 50 || heightCm > 250)) {
       return res.status(400).json({
-        error: { code: "BAD_REQUEST", message: "heightCm out of range" }
+        error: { code: "BAD_REQUEST", message: "heightCm out of range" },
       });
     }
 
@@ -57,8 +65,8 @@ async function updateProfile(req, res, next) {
         $set: {
           ...(initialWeightKg != null ? { initialWeightKg } : {}),
           ...(targetWeightKg != null ? { targetWeightKg } : {}),
-          ...(heightCm != null ? { heightCm } : {})
-        }
+          ...(heightCm != null ? { heightCm } : {}),
+        },
       },
       { new: true }
     );
@@ -72,8 +80,8 @@ async function updateProfile(req, res, next) {
         targetWeightKg: user.targetWeightKg,
         heightCm: user.heightCm,
         teamId: user.teamId ? String(user.teamId) : null,
-        streakDays: user.streakDays
-      }
+        streakDays: user.streakDays,
+      },
     });
   } catch (err) {
     return next(err);
@@ -81,4 +89,3 @@ async function updateProfile(req, res, next) {
 }
 
 module.exports = { getMe, updateProfile };
-
