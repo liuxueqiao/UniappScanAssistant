@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 
 const { notFoundHandler, errorHandler } = require("./middleware/error");
 
@@ -13,6 +14,7 @@ const teamRoutes = require("./routes/team.routes");
 const challengeRoutes = require("./routes/challenge.routes");
 const articleRoutes = require("./routes/article.routes");
 const cosRoutes = require("./routes/cos.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 function createApp() {
   const app = express();
@@ -24,7 +26,7 @@ function createApp() {
       windowMs: 60 * 1000,
       limit: 120,
       standardHeaders: true,
-      legacyHeaders: false
+      legacyHeaders: false,
     })
   );
 
@@ -44,6 +46,8 @@ function createApp() {
   app.use("/api/challenges", challengeRoutes);
   app.use("/api/articles", articleRoutes);
   app.use("/api/cos", cosRoutes);
+  app.use("/api/admin", adminRoutes);
+  app.use("/admin", express.static(path.join(__dirname, "public/admin")));
 
   app.use(notFoundHandler);
   app.use(errorHandler);
@@ -52,4 +56,3 @@ function createApp() {
 }
 
 module.exports = { createApp };
-
